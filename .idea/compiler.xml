@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="FootballClubManagement-" />
+        <module name="Excercise1" />
+        <module name="dao" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="App" target="1.8" />
+      <module name="dataaccess" target="1.8" />
+      <module name="logic" target="1.7" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="App" options="-parameters" />
+      <module name="Excercise1" options="-parameters" />
+      <module name="FootballClubManagement-" options="-parameters" />
+      <module name="dao" options="" />
+    </option>
+  </component>
+</project>
