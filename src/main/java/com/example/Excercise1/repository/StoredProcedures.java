@@ -1,6 +1,6 @@
 package com.example.Excercise1.repository;
 
-import com.example.Excercise1.mars.ValueObject;
+import com.example.Excercise1.valueObject.ValueObject;
 
 import java.util.List;
 import java.util.Map;

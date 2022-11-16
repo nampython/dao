@@ -1,6 +1,6 @@
 package com.example.Excercise1.repository;
 
-import com.example.Excercise1.mars.ValueObject;
+import com.example.Excercise1.valueObject.ValueObject;
 
 import java.sql.*;
 import java.util.List;
@@ -25,7 +25,7 @@ public class StoredProceduresImpl implements StoredProcedures{
             while (rs.next()) {
                 System.out.println(rs.getString(1) + "-" + rs.getString(2) + "-" + rs.getString(3) + rs.getString(4));
             }
-        } catch (SQLException e) {
+        } catch (SQLException  e) {
             throw new RuntimeException(e);
         } finally {
             FunctionalCommon.closeStatement(callableStatement);
@@ -89,7 +89,7 @@ public class StoredProceduresImpl implements StoredProcedures{
             callableStatement.registerOutParameter(2, Types.INTEGER);
             callableStatement.execute();
             System.out.println(callableStatement.getInt(2));
-        } catch (SQLException e) {
+        } catch (SQLException  e) {
             throw new RuntimeException(e);
         }
         return null;

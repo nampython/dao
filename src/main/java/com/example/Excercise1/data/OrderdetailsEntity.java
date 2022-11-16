@@ -1,6 +1,6 @@
 package com.example.Excercise1.data;
 
-import com.example.Excercise1.mars.ValueObject;
+import com.example.Excercise1.valueObject.ValueObject;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -91,10 +91,6 @@ public class OrderdetailsEntity implements ValueObject {
         return sql;
     }
 
-    @Override
-    public String getSelectSql() {
-        return null;
-    }
 
     @Override
     public List getParams() {
@@ -107,43 +103,5 @@ public class OrderdetailsEntity implements ValueObject {
         return params;
     }
 
-    @Override
-    public List getPkParams() {
-        return null;
-    }
 
-    @Override
-    public boolean isModified() {
-        return false;
-    }
-
-    @Override
-    public int getResultCode() {
-        return 0;
-    }
-
-    @Override
-    public String getDeleteSql() {
-        return null;
-    }
-
-    @Override
-    public String getInsertSql() {
-        return null;
-    }
-
-    @Override
-    public String getUpdateSql() {
-        return null;
-    }
-
-    @Override
-    public void clear() {
-
-    }
-
-    @Override
-    public void setModified(boolean var1) {
-
-    }
 }

@@ -1,29 +1,38 @@
 package com.example.Excercise1.repository;
 
+import com.example.Excercise1.exceptions.ConnectionException;
+import com.example.Excercise1.exceptions.SetParameterException;
+import com.example.Excercise1.exceptions.StatementException;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.List;
+import java.util.Properties;
+
+import static com.example.Excercise1.constants.MessageException.*;
 
 public class FunctionalCommon {
-
+    // TODO: move these variables to constants file
     public static String URL = "jdbc:mysql://localhost:3306/classicmodels";
     public static String USER = "root";
     public static String PW = "admin";
+
 
     /**
      * @param ps
      * @param params
      */
-    public static void setSearchParams(PreparedStatement ps, List params) throws SQLException {
-        // TODO - Complete this fucntion
+    public static void setSearchParams(PreparedStatement ps, List<Object> params) {
+        // TODO - Complete this function
         if (params == null) {
-            throw new NullPointerException("Invalid parameters: params is NULL");
+            throw new NullPointerException(INVALID_PARAMETER);
         }
-
-        for (int i = 0, j = 1; i < params.size(); i++, j++) {
-            Object obj = params.get(i);
-//            ps.setString(1, (String) obj);
-            setParam(ps, obj, j);
+        try {
+            for (int i = 0, j = 1; i < params.size(); i++, j++) {
+                Object obj = params.get(i);
+                setParam(ps, obj, j);
+            }
+        } catch (SQLException | UnsupportedOperationException  sqlException) {
+            throw new SetParameterException(FAILED_TO_SET_PARAMETER);
         }
     }
 
@@ -35,7 +44,7 @@ public class FunctionalCommon {
     private static void setParam(PreparedStatement ps, Object obj, int j) throws SQLException {
         // TODO - Complete this function
         if (obj == null) {
-            //
+            ps.setString(j, null);
         } else if (obj instanceof String) {
             ps.setString(j, (String) obj);
         } else if (obj instanceof Integer) {
@@ -63,30 +72,38 @@ public class FunctionalCommon {
      * @param params
      */
     private void processParams(String sql, List params) {
-        // TODO - Complete this fucntion
+        // TODO - Complete this function
     }
 
     public static void closeConnection(Connection connection) {
         try {
-            connection.close();
-        } catch (SQLException sqle) {
-            // nothing
-        } finally {
-            connection = null;
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException sqlException) {
+            throw new ConnectionException(FAILED_TO_CLOSE_CONNECTION, sqlException.getCause());
         }
     }
 
     public static void closeStatement(Statement stmt) {
         try {
-            stmt.close();
-        } catch (SQLException sqle) {
-            // nothing
-        } finally {
-            stmt = null;
+            if (stmt != null) {
+                stmt.close();
+            }
+        } catch (SQLException sqlException) {
+            throw new StatementException(FAILED_TO_CLOSE_STATEMENT, sqlException.getCause());
         }
     }
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PW);
+        Properties properties = new Properties();
+        properties.setProperty("user", USER);
+        properties.setProperty("password", PW);
+        properties.setProperty("useSSL", "false");
+        try {
+            return DriverManager.getConnection(URL, properties);
+        } catch (SQLException sqlException) {
+            throw new ConnectionException(FAILED_TO_GET_CONNECTION, sqlException.getCause());
+        }
     }
 }
