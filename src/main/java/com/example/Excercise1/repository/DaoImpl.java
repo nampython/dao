@@ -1,32 +1,32 @@
 package com.example.Excercise1.repository;
 
-import com.example.Excercise1.exceptions.XifinDataNotFoundException;
-import com.example.Excercise1.mars.ValueObject;
-import com.example.Excercise1.persistence.ErrorCodeMap;
-import org.apache.log4j.Logger;
+import com.example.Excercise1.exceptions.GetDataException;
+import com.example.Excercise1.exceptions.SetDataException;
+import com.example.Excercise1.valueObject.Value;
+import com.example.Excercise1.valueObject.ValueObject;
 import org.springframework.stereotype.Repository;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import static com.example.Excercise1.repository.FunctionalCommon.getConnection;
+import static com.example.Excercise1.constants.MessageException.*;
+import static com.example.Excercise1.repository.FunctionalCommon.*;
 
 @Repository
 public class DaoImpl implements Dao {
 
-
-    private static final Logger log = Logger.getLogger(DaoImpl.class);
-
     /**
+     * return a list of value object
      *
-     * @param sql
-     * @param valueObjectClass
-     * @return
-     * @param <T>
-     * @throws XifinDataNotFoundException
+     * @param sql:             sql query
+     * @param valueObjectClass The class of the value object.
+     * @param <T>:
+     * @throws GetDataException if the record was not found
+     * @return: a ValueObject that can be downcasted to valueObjectClass
      */
     @Override
-    public <T extends ValueObject> List<T> getValueObject(String sql, Class<T> valueObjectClass) throws XifinDataNotFoundException {
-        List<T> valueObjects = new ArrayList<T>();
+    public <T extends ValueObject> List<T> getListOfValueObject(String sql, Class<T> valueObjectClass) throws GetDataException {
+        List<T> valueObjects = new ArrayList<>();
         Connection connection = null;
         Statement stmt = null;
         ResultSet rs = null;
@@ -36,44 +36,31 @@ public class DaoImpl implements Dao {
 //            stmt.setFetchSize(getFetchSize());
             rs = stmt.executeQuery(sql);
             while (rs.next()) {
-                ValueObject valueObject = valueObjectClass.getConstructor().newInstance();
+                T valueObject = valueObjectClass.getConstructor().newInstance();
                 valueObject.parseSql(rs);
-                valueObject.setResultCode(ErrorCodeMap.RECORD_FOUND);
                 valueObjects.add((T) valueObject);
             }
-        } catch (Exception e) {
-            throw new XifinDataNotFoundException("failure to get value objects " + sql, e);
+        } catch (SQLException | NoSuchMethodException | InstantiationException | IllegalAccessException |
+                 InvocationTargetException e) {
+            throw new GetDataException(FAILED_TO_GET_DATA, e.getCause());
         } finally {
-            FunctionalCommon.closeStatement(stmt);
-            FunctionalCommon.closeConnection(connection);
+            closeStatement(stmt);
+            closeConnection(connection);
         }
-
         return valueObjects;
-
     }
 
     /**
-     * @param sql
-     * @param params
-     * @param valueObjectClass
-     * @param <T>
-     * @return
+     * get list of value object with preparedStatement
+     *
+     * @param sql              sql query
+     * @param params           the parameter to use in the sql qeury
+     * @param valueObjectClass The class of the value object.
+     * @param <T>:
+     * @return a ValueObject that can be downcasted to valueObjectClass
      */
     @Override
-    public <T extends ValueObject> T getValueObject(String sql, List params, Class<T> valueObjectClass) throws XifinDataNotFoundException {
-        ValueObject valueObject = null;
-        try {
-            valueObject = valueObjectClass.newInstance();
-            loadValueObject(sql, params, valueObject);
-        } catch (Exception e) {
-            throw new XifinDataNotFoundException("Unable to create instance of valueObjectClass" + valueObjectClass, e);
-        }
-
-        return (T) valueObject;
-    }
-
-    @Override
-    public <T extends ValueObject> List<T> getValueObjects(String sql, List params, Class<T> valueObjectClass) {
+    public <T extends ValueObject> List<T> getListOfValueObjectWithPreparedStatement(String sql, List<Object> params, Class<T> valueObjectClass) {
         List<T> valueObjects = new ArrayList<>();
         Connection connection = null;
         PreparedStatement ps = null;
@@ -81,23 +68,67 @@ public class DaoImpl implements Dao {
         try {
             connection = getConnection();
             ps = connection.prepareStatement(sql);
-            FunctionalCommon.setSearchParams(ps, params);
+            setSearchParams(ps, params);
             rs = ps.executeQuery();
             while (rs.next()) {
-                ValueObject valueObject = valueObjectClass.newInstance();
+                T valueObject = valueObjectClass.getConstructor().newInstance();
                 valueObject.parseSql(rs);
                 valueObjects.add((T) valueObject);
             }
-        } catch (SQLException | InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException | InstantiationException | IllegalAccessException | NoSuchMethodException |
+                 InvocationTargetException e) {
+            throw new GetDataException(FAILED_TO_GET_DATA);
+        } finally {
+            closeStatement(ps);
+            closeConnection(connection);
         }
 
         return valueObjects;
     }
 
+    /**
+     * get a single value object
+     *
+     * @param sql              sql query
+     * @param params           the parameter to use in the sql qeury
+     * @param valueObjectClass The class of the value object.
+     * @param <T>:
+     * @return a value object
+     */
     @Override
-    public <T extends ValueObject> List<List<Value>> getMultipleRows(String sql, List params) {
-        List<List<Value>> rows = new ArrayList<List<Value>>();
+    public <T extends ValueObject> T getSingleValueObjectWithPreparedStatement(String sql, List<Object> params, Class<T> valueObjectClass) {
+        T valueObject = null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet rs = null;
+        try {
+            connection = getConnection();
+            valueObject = valueObjectClass.getConstructor().newInstance();
+            preparedStatement = connection.prepareStatement(sql);
+            setSearchParams(preparedStatement, params);
+            rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                valueObject.parseSql(rs);
+            }
+        } catch (SQLException | NoSuchMethodException | InstantiationException | IllegalAccessException |
+                 InvocationTargetException sqlException) {
+            throw new GetDataException(FAILED_TO_GET_DATA);
+        } finally {
+            closeStatement(preparedStatement);
+            closeConnection(connection);
+        }
+        return (T) valueObject;
+    }
+
+    /**
+     * Get multiple rows
+     * @param sql sql query
+     * @return Multiple Row
+     * @param <T>:
+     */
+    @Override
+    public <T extends ValueObject> List<List<Value>> getMultipleRowsWithStatement(String sql) {
+        List<List<Value>> rows = new ArrayList<>();
         Connection cn = null;
         Statement st = null;
         ResultSet rs = null;
@@ -108,39 +139,30 @@ public class DaoImpl implements Dao {
             // sql = processParams(sql, params);
             st = cn.createStatement();
             rs = st.executeQuery(sql);
-            while (rs.next()) {
-//                ResultSetMetaData meta = rs.getMetaData();
-                meta = rs.getMetaData();
-                count = meta.getColumnCount();
-                if (count <= 0) {
-                    continue;
-                }
-                List<Value> columns = new ArrayList<>();
-                for (int i = 1; i <= count; i++) {
-                    Object obj = rs.getObject(i);
-                    columns.add(new Value(obj));
-                }
-                rows.add(columns);
-            }
-
+            getMultipleRows(rs, rows);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new GetDataException(FAILED_TO_GET_MULTIPLE_ROW);
         } finally {
-            FunctionalCommon.closeStatement(st);
-            FunctionalCommon.closeConnection(cn);
+            closeStatement(st);
+            closeConnection(cn);
         }
         return rows;
     }
 
+    /**
+     * Get single row data
+     * @param sql sql query
+     * @return single row
+     * @param <T>:
+     */
     @Override
-    public <T extends ValueObject> List<Value> getSingleRow(String sql, List params) {
+    public <T extends ValueObject> List<Value> getSingleRow(String sql) {
         List<Value> values = new ArrayList<>();
         Connection cn = null;
         Statement st = null;
         ResultSet rs = null;
         ResultSetMetaData meta = null;
         int count = 0;
-
         try {
             cn = getConnection();
             st = cn.createStatement();
@@ -154,113 +176,64 @@ public class DaoImpl implements Dao {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        finally {
-            FunctionalCommon.closeStatement(st);
-            FunctionalCommon.closeConnection(cn);
+            throw new GetDataException(FAILED_TO_GET_SINGLE_ROW);
+        } finally {
+            closeStatement(st);
+            closeConnection(cn);
         }
         return values;
     }
 
     /**
-     *
-     * @param valueObject
+     * Set list of value object
+     * @param valueObjects List of valueObjectClass The class of the value object.
+     * @throws SQLException
      */
     @Override
-    public void setValueObject(ValueObject valueObject) throws SQLException {
-        excuteSQL(valueObject, valueObject.getExecuteSql(), valueObject.getParams());
-    }
-
-    @Override
-    public void setValueObjects(List<ValueObject> valueObjects) throws SQLException {
+    public void setListOfValueObjects(List<ValueObject> valueObjects) throws SQLException {
         Connection conn = null;
         PreparedStatement ps = null;
         String sql = null;
-        List params = null;
+        List<Object> params = null;
         try {
-            conn = FunctionalCommon.getConnection();
+            conn = getConnection();
             conn.setAutoCommit(false);
             for (ValueObject valueObject : valueObjects) {
                 sql = valueObject.getExecuteSql();
                 params = valueObject.getParams();
                 ps = conn.prepareStatement(sql);
-                FunctionalCommon.setSearchParams(ps, params);
+                setSearchParams(ps, params);
                 ps.executeUpdate();
             }
             conn.commit();
             conn.setAutoCommit(true);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        finally {
-            FunctionalCommon.closeStatement(ps);
-            FunctionalCommon.closeConnection(conn);
+            throw new SetDataException(FAILED_TO_SAVE_VALUE_OBJECT);
+        } finally {
+            closeStatement(ps);
+            closeConnection(conn);
         }
     }
 
+    /**
+     * @param valueObject valueObjectClass The class of the value object.
+     */
     @Override
-    public int getMaxId(String sql) throws SQLException {
-        Connection  connection = null;
-        Statement ps = null;
-        ResultSet rs = null;
-        try {
-            connection = getConnection();
-            ps = connection.createStatement();
-            rs = ps.executeQuery(sql);
-            if (rs.next()) {
-                return rs.getInt(1);
-            } else {
-                //
-            }
-        }catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            FunctionalCommon.closeStatement(ps);
-            FunctionalCommon.closeConnection(connection);
-        }
-
-        return 0;
-    }
-
-    public void excuteSQL(ValueObject valueObject, String sql, List params) throws SQLException {
+    public void setValueObject(ValueObject valueObject) throws SQLException {
+        List<Object> params = valueObject.getParams();
+        String sql = valueObject.getExecuteSql();
         Connection connection = null;
-        PreparedStatement ps = null;
+        PreparedStatement preparedStatement = null;
         try {
             connection = getConnection();
-            ps = connection.prepareStatement(sql);
-            FunctionalCommon.setSearchParams(ps, params);
-            ps.executeUpdate();
+            preparedStatement = connection.prepareStatement(sql);
+            setSearchParams(preparedStatement, params);
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException(FAILED_TO_SAVE_VALUE_OBJECT);
         } finally {
-            FunctionalCommon.closeStatement(ps);
-            FunctionalCommon.closeConnection(connection);
+            closeStatement(preparedStatement);
+            closeConnection(connection);
         }
     }
-
-    private void loadValueObject(String sql, List params, ValueObject valueObject) {
-        Connection cn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            cn = getConnection();
-//            sql = processParams(sql, params);
-            ps = cn.prepareStatement(sql);
-//            ps.setString(1, "Classic Cars");
-            FunctionalCommon.setSearchParams(ps, params);
-            rs = ps.executeQuery();
-            if (rs.next()) {
-                valueObject.parseSql(rs);
-                valueObject.setResultCode(ErrorCodeMap.RECORD_FOUND);
-            } else {
-                String errMsg = "Data Not Found.";
-//                throw new
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 }

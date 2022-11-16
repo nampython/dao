@@ -1,6 +1,6 @@
 package com.example.Excercise1.utils;
 
-import com.example.Excercise1.data.RequiredError;
+import com.example.Excercise1.valueObject.RequiredError;
 
 import java.util.ArrayList;
 import java.util.List;
