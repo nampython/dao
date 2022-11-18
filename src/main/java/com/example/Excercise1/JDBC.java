@@ -4,11 +4,8 @@ import com.example.Excercise1.repository.Dao;
 import com.example.Excercise1.repository.DaoImpl;
 import com.example.Excercise1.repository.StoredProcedures;
 import com.example.Excercise1.repository.StoredProceduresImpl;
-import com.example.Excercise1.valueObject.Value;
 import java.sql.*;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 
