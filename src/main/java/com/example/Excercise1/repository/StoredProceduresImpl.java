@@ -1,104 +1,122 @@
 package com.example.Excercise1.repository;
 
+import com.example.Excercise1.exceptions.ProcedureException;
+import com.example.Excercise1.valueObject.Value;
 import com.example.Excercise1.valueObject.ValueObject;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import static com.example.Excercise1.constants.MessageException.FAILED_TO_LOAD_VALUE_OBJECT_BY_PRODUCER;
+import static com.example.Excercise1.constants.MessageException.FAILED_TO_LOAD_VALUE_OBJECT_BY_PRODUCER_INPUT_AND_OUTPUT_PARAMS;
+import static com.example.Excercise1.repository.FunctionalCommon.*;
+import static com.example.Excercise1.repository.FunctionalCommon.getMultipleRows;
 
-public class StoredProceduresImpl implements StoredProcedures{
+public class StoredProceduresImpl implements StoredProcedures {
+    private static final Logger log = LogManager.getLogger(StoredProceduresImpl.class);
 
     /**
-     *
      * @param storedProcedureName
      */
     @Override
-    public void executeProcedure(String storedProcedureName) {
+    public List<List<Value>> executeProcedure(String storedProcedureName) {
         Connection connection = null;
         CallableStatement callableStatement = null;
+        ResultSetMetaData metaData = null;
         ResultSet rs = null;
+        List<List<Value>> values = new ArrayList<>();
         try {
-            connection = FunctionalCommon.getConnection();
+            log.info("message=Calling Stored Procedure= " + storedProcedureName);
+            connection = getConnection();
             callableStatement = connection.prepareCall(storedProcedureName);
             callableStatement.execute();
             rs = callableStatement.getResultSet();
-            while (rs.next()) {
-                System.out.println(rs.getString(1) + "-" + rs.getString(2) + "-" + rs.getString(3) + rs.getString(4));
-            }
-        } catch (SQLException  e) {
-            throw new RuntimeException(e);
+            getMultipleRows(rs, values);
+            return values;
+        } catch (SQLException e) {
+            throw new ProcedureException(FAILED_TO_LOAD_VALUE_OBJECT_BY_PRODUCER);
         } finally {
-            FunctionalCommon.closeStatement(callableStatement);
-            FunctionalCommon.closeConnection(connection);
+            closeStatement(callableStatement);
+            closeConnection(connection);
         }
-
     }
 
     /**
-     * input: getOfficeByCountry, 'USA'
-     * output: call getOfficeByCountry(?, ? ...)
-     *
      * @param storedProcedureName
      * @param params
      * @param <T>
      */
     @Override
-    public <T extends ValueObject> void executeProcedure(String storedProcedureName, List params) {
+    public <T extends ValueObject> List<List<Value>> executeProcedureWithInputParams(String storedProcedureName, List<Object> params) {
+        List<List<Value>> values = new ArrayList<>();
         Connection connection = null;
         CallableStatement callableStatement = null;
         ResultSet rs = null;
-        String procSql = processSql(storedProcedureName, params);
+        String procSql = processSql(storedProcedureName, params.size());
         try {
-            connection = FunctionalCommon.getConnection();
+            log.debug("message=Calling Stored Procedure= " + storedProcedureName + " ,Argument= " + params);
+            connection = getConnection();
             callableStatement = connection.prepareCall(procSql);
-            FunctionalCommon.setSearchParams(callableStatement, params);
+            setSearchParams(callableStatement, params);
             callableStatement.execute();
             rs = callableStatement.getResultSet();
-            while (rs.next()) {
-                System.out.print(rs.getString(1) + rs.getString(2));
-                System.out.println();
-            }
-
+            getMultipleRows(rs, values);
+            return values;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        finally {
-            FunctionalCommon.closeStatement(callableStatement);
-            FunctionalCommon.closeConnection(connection);
+            throw new ProcedureException(String.format(FAILED_TO_LOAD_VALUE_OBJECT_BY_PRODUCER, storedProcedureName, params));
+        } finally {
+            closeStatement(callableStatement);
+            closeConnection(connection);
         }
     }
 
     /**
-     * input: GetOrderCountByStatus
-     * CancelledL: ?
-     * total: ?
-     * @param procedureName
-     * @param inputParams
-     * @param outputParams
-     * @return
+     *
+     *
+     * @param:
+     * @param inputParams:
+     * @param outputParams:
+     * @return:
      */
     @Override
-    public Map<Integer, Object> executeProcedure(String procedureName, Map<Integer, Object> inputParams, Map<Integer, Integer> outputParams) {
+    public Map<Integer, Object> executeProcedureWithInputAndOutputParams(String storedProcedureName, Map<Integer, Object> inputParams, Map<Integer, Integer> outputParams) {
         Connection connection = null;
         CallableStatement callableStatement = null;
         ResultSet rs = null;
+        Map<Integer, Object> outputData = new HashMap<>();
+        int size = inputParams.size() + outputParams.size();
+        String procSql = processSql(storedProcedureName, size);
         try {
-            connection = FunctionalCommon.getConnection();
-            callableStatement = connection.prepareCall(procedureName);
-            callableStatement.setString(1, "Cancelled");
-            callableStatement.registerOutParameter(2, Types.INTEGER);
+            log.info("Calling Stored Procedure: " + storedProcedureName + " InputParams: " + inputParams + " OutParams: " + outputParams);
+            connection = getConnection();
+            callableStatement = connection.prepareCall(procSql);
+            //Register output params
+            for (Map.Entry<Integer, Integer> entry : outputParams.entrySet()) {
+                callableStatement.registerOutParameter(entry.getKey(), entry.getValue());
+            }
+            //Set input params
+            for (Map.Entry<Integer, Object> entry : inputParams.entrySet()) {
+                setParam(callableStatement, entry.getValue(), entry.getKey());
+            }
+            //Execute store procedure
             callableStatement.execute();
-            System.out.println(callableStatement.getInt(2));
-        } catch (SQLException  e) {
-            throw new RuntimeException(e);
+            //Get data returned
+            for (Integer key : outputParams.keySet()) {
+                outputData.put(key, callableStatement.getObject(key));
+            }
+            return outputData;
+        } catch (SQLException e) {
+            throw new ProcedureException(String.format(FAILED_TO_LOAD_VALUE_OBJECT_BY_PRODUCER_INPUT_AND_OUTPUT_PARAMS, storedProcedureName, inputParams,outputParams));
         }
-        return null;
     }
 
-    private String processSql(String storedProcedureName, List params) {
+    private String processSql(String storedProcedureName, int size) {
         StringBuilder processSql = new StringBuilder("call " + storedProcedureName + "(");
-        for (int i = 0; i < params.size(); i++) {
-            if (i == params.size() - 1) {
+        for (int i = 0; i < size; i++) {
+            if (i == size - 1) {
                 processSql.append("?");
             } else {
                 processSql.append("?, ");

@@ -1,6 +1,4 @@
-package com.example.Excercise1.data;
-
-import com.example.Excercise1.valueObject.ValueObject;
+package com.example.Excercise1.valueObject;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -91,10 +89,9 @@ public class OrderdetailsEntity implements ValueObject {
         return sql;
     }
 
-
     @Override
-    public List getParams() {
-        List<java.io.Serializable> params = new ArrayList<>(6);
+    public List<Object> getParams() {
+        List<Object> params = new ArrayList<>();
         params.add(this.orderNumber);
         params.add(this.productCode);
         params.add(this.quantityOrdered);
@@ -102,6 +99,4 @@ public class OrderdetailsEntity implements ValueObject {
         params.add(this.orderLineNumber);
         return params;
     }
-
-
 }

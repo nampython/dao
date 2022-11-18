@@ -1,9 +1,10 @@
-package com.example.Excercise1.data;
+package com.example.Excercise1.valueObject;
 
 import com.example.Excercise1.valueObject.ValueObject;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Productlines implements ValueObject {
@@ -74,12 +75,18 @@ public class Productlines implements ValueObject {
 
     @Override
     public String getExecuteSql() {
-        return null;
+        String sql = "insert into productlines(productLine, textDescription, htmlDescription, image) values (?, ?, ?, ?)";
+        return sql;
     }
 
     @Override
-    public List getParams() {
-        return null;
+    public List<Object> getParams() {
+        List<Object> objects = new ArrayList<>();
+        objects.add(this.productLine);
+        objects.add(this.img);
+        objects.add(this.htmlDescription);
+        objects.add(this.textDescription);
+        return objects;
     }
 
     @Override

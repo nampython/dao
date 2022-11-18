@@ -3,20 +3,19 @@ package com.example.Excercise1.repository;
 import com.example.Excercise1.exceptions.ConnectionException;
 import com.example.Excercise1.exceptions.SetParameterException;
 import com.example.Excercise1.exceptions.StatementException;
+import com.example.Excercise1.valueObject.Value;
+
 import java.math.BigDecimal;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import static com.example.Excercise1.constants.Database.*;
 import static com.example.Excercise1.constants.MessageException.*;
 
 public class FunctionalCommon {
     // TODO: move these variables to constants file
-    public static String URL = "jdbc:mysql://localhost:3306/classicmodels";
-    public static String USER = "root";
-    public static String PW = "admin";
-
-
     /**
      * @param ps
      * @param params
@@ -41,7 +40,7 @@ public class FunctionalCommon {
      * @param j
      * @param obj
      */
-    private static void setParam(PreparedStatement ps, Object obj, int j) throws SQLException {
+    public static void setParam(PreparedStatement ps, Object obj, int j) throws SQLException {
         // TODO - Complete this function
         if (obj == null) {
             ps.setString(j, null);
@@ -104,6 +103,24 @@ public class FunctionalCommon {
             return DriverManager.getConnection(URL, properties);
         } catch (SQLException sqlException) {
             throw new ConnectionException(FAILED_TO_GET_CONNECTION, sqlException.getCause());
+        }
+    }
+
+    public static void getMultipleRows(ResultSet rs, List<List<Value>> values) throws SQLException {
+        ResultSetMetaData metaData;
+        int columnCount;
+        while (rs.next()) {
+            metaData = rs.getMetaData();
+            columnCount = metaData.getColumnCount();
+            if (columnCount <= 0) {
+                continue;
+            }
+            List<Value> row = new ArrayList<>();
+            for (int j = 1; j <= columnCount; j++) {
+                Object o = rs.getObject(j);
+                row.add(new Value(o));
+            }
+            values.add(row);
         }
     }
 }

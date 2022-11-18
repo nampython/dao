@@ -1,4 +1,4 @@
-package com.example.Excercise1.data;
+package com.example.Excercise1.valueObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

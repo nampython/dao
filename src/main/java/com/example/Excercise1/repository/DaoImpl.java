@@ -1,19 +1,16 @@
 package com.example.Excercise1.repository;
 
 import com.example.Excercise1.exceptions.GetDataException;
+import com.example.Excercise1.exceptions.SetDataException;
 import com.example.Excercise1.valueObject.Value;
 import com.example.Excercise1.valueObject.ValueObject;
-import com.example.Excercise1.persistence.ErrorCodeMap;
 import org.springframework.stereotype.Repository;
-
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
 import static com.example.Excercise1.constants.MessageException.*;
-import static com.example.Excercise1.repository.FunctionalCommon.getConnection;
-import static com.example.Excercise1.repository.FunctionalCommon.setSearchParams;
+import static com.example.Excercise1.repository.FunctionalCommon.*;
 
 @Repository
 public class DaoImpl implements Dao {
@@ -39,17 +36,16 @@ public class DaoImpl implements Dao {
 //            stmt.setFetchSize(getFetchSize());
             rs = stmt.executeQuery(sql);
             while (rs.next()) {
-                ValueObject valueObject = valueObjectClass.getConstructor().newInstance();
+                T valueObject = valueObjectClass.getConstructor().newInstance();
                 valueObject.parseSql(rs);
-                valueObject.setResultCode(ErrorCodeMap.RECORD_FOUND);
                 valueObjects.add((T) valueObject);
             }
         } catch (SQLException | NoSuchMethodException | InstantiationException | IllegalAccessException |
                  InvocationTargetException e) {
             throw new GetDataException(FAILED_TO_GET_DATA, e.getCause());
         } finally {
-            FunctionalCommon.closeStatement(stmt);
-            FunctionalCommon.closeConnection(connection);
+            closeStatement(stmt);
+            closeConnection(connection);
         }
         return valueObjects;
     }
@@ -83,8 +79,8 @@ public class DaoImpl implements Dao {
                  InvocationTargetException e) {
             throw new GetDataException(FAILED_TO_GET_DATA);
         } finally {
-            FunctionalCommon.closeStatement(ps);
-            FunctionalCommon.closeConnection(connection);
+            closeStatement(ps);
+            closeConnection(connection);
         }
 
         return valueObjects;
@@ -118,8 +114,8 @@ public class DaoImpl implements Dao {
                  InvocationTargetException sqlException) {
             throw new GetDataException(FAILED_TO_GET_DATA);
         } finally {
-            FunctionalCommon.closeStatement(preparedStatement);
-            FunctionalCommon.closeConnection(connection);
+            closeStatement(preparedStatement);
+            closeConnection(connection);
         }
         return (T) valueObject;
     }
@@ -127,12 +123,11 @@ public class DaoImpl implements Dao {
     /**
      * Get multiple rows
      * @param sql sql query
-     * @param params the parameter to use in the sql qeury
      * @return Multiple Row
      * @param <T>:
      */
     @Override
-    public <T extends ValueObject> List<List<Value>> getMultipleRows(String sql) {
+    public <T extends ValueObject> List<List<Value>> getMultipleRowsWithStatement(String sql) {
         List<List<Value>> rows = new ArrayList<>();
         Connection cn = null;
         Statement st = null;
@@ -144,24 +139,12 @@ public class DaoImpl implements Dao {
             // sql = processParams(sql, params);
             st = cn.createStatement();
             rs = st.executeQuery(sql);
-            while (rs.next()) {
-                meta = rs.getMetaData();
-                count = meta.getColumnCount();
-                if (count <= 0) {
-                    continue;
-                }
-                List<Value> columns = new ArrayList<>();
-                for (int i = 1; i <= count; i++) {
-                    Object obj = rs.getObject(i);
-                    columns.add(new Value(obj));
-                }
-                rows.add(columns);
-            }
+            getMultipleRows(rs, rows);
         } catch (SQLException e) {
             throw new GetDataException(FAILED_TO_GET_MULTIPLE_ROW);
         } finally {
-            FunctionalCommon.closeStatement(st);
-            FunctionalCommon.closeConnection(cn);
+            closeStatement(st);
+            closeConnection(cn);
         }
         return rows;
     }
@@ -195,28 +178,25 @@ public class DaoImpl implements Dao {
         } catch (SQLException e) {
             throw new GetDataException(FAILED_TO_GET_SINGLE_ROW);
         } finally {
-            FunctionalCommon.closeStatement(st);
-            FunctionalCommon.closeConnection(cn);
+            closeStatement(st);
+            closeConnection(cn);
         }
         return values;
     }
 
     /**
-     * @param valueObject
+     * Set list of value object
+     * @param valueObjects List of valueObjectClass The class of the value object.
+     * @throws SQLException
      */
     @Override
-    public void setValueObject(ValueObject valueObject) throws SQLException {
-        excuteSQL(valueObject, valueObject.getExecuteSql(), valueObject.getParams());
-    }
-
-    @Override
-    public void setValueObjects(List<ValueObject> valueObjects) throws SQLException {
+    public void setListOfValueObjects(List<ValueObject> valueObjects) throws SQLException {
         Connection conn = null;
         PreparedStatement ps = null;
         String sql = null;
-        List params = null;
+        List<Object> params = null;
         try {
-            conn = FunctionalCommon.getConnection();
+            conn = getConnection();
             conn.setAutoCommit(false);
             for (ValueObject valueObject : valueObjects) {
                 sql = valueObject.getExecuteSql();
@@ -228,25 +208,32 @@ public class DaoImpl implements Dao {
             conn.commit();
             conn.setAutoCommit(true);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SetDataException(FAILED_TO_SAVE_VALUE_OBJECT);
         } finally {
-            FunctionalCommon.closeStatement(ps);
-            FunctionalCommon.closeConnection(conn);
+            closeStatement(ps);
+            closeConnection(conn);
         }
     }
-    public void excuteSQL(ValueObject valueObject, String sql, List params) throws SQLException {
+
+    /**
+     * @param valueObject valueObjectClass The class of the value object.
+     */
+    @Override
+    public void setValueObject(ValueObject valueObject) throws SQLException {
+        List<Object> params = valueObject.getParams();
+        String sql = valueObject.getExecuteSql();
         Connection connection = null;
-        PreparedStatement ps = null;
+        PreparedStatement preparedStatement = null;
         try {
             connection = getConnection();
-            ps = connection.prepareStatement(sql);
-            setSearchParams(ps, params);
-            ps.executeUpdate();
+            preparedStatement = connection.prepareStatement(sql);
+            setSearchParams(preparedStatement, params);
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException(FAILED_TO_SAVE_VALUE_OBJECT);
         } finally {
-            FunctionalCommon.closeStatement(ps);
-            FunctionalCommon.closeConnection(connection);
+            closeStatement(preparedStatement);
+            closeConnection(connection);
         }
     }
 }

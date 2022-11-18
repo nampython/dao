@@ -1,6 +1,4 @@
-package com.example.Excercise1.data;
-
-import com.example.Excercise1.valueObject.ValueObject;
+package com.example.Excercise1.valueObject;
 
 import java.sql.Date;
 import java.sql.ResultSet;
