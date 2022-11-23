@@ -1,4 +1,6 @@
-package com.example.Excercise1.valueObject;
+package com.example.Excercise1.entities;
+
+import com.example.Excercise1.valueObject.ValueObject;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;

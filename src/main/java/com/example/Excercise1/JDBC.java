@@ -1,10 +1,9 @@
 package com.example.Excercise1;
 
-import com.example.Excercise1.repository.Dao;
-import com.example.Excercise1.repository.DaoImpl;
-import com.example.Excercise1.repository.StoredProcedures;
-import com.example.Excercise1.repository.StoredProceduresImpl;
+import com.example.Excercise1.repository.*;
+
 import java.sql.*;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
@@ -15,6 +14,7 @@ public class JDBC {
         String sql = "select * from productlines where productLine = 'Classic Cars'";
         Dao dao = new DaoImpl();
         StoredProcedures storedProcedures = new StoredProceduresImpl();
+        JdbcConcept jdbcConcept = new JdbcConceptImpl();
 //        Productlines productlines = new Productlines();
 //        productlines.setProductLine("11");
 //        productlines.setTextDescription("11");
@@ -23,7 +23,17 @@ public class JDBC {
 //        dao.setValueObject(productlines);
         String sql1 = "getOfficeByCountry";
         String sql2 = "GetOrderCountByStatus";
-        Map<Integer, Object> map = storedProcedures.executeProcedureWithInputAndOutputParams(sql2, Collections.singletonMap(1, "Shipped"), Collections.singletonMap(2, Types.INTEGER));
-        map.entrySet().forEach(System.out::println);
+        String sql3 = "insert into productlines(productLine, textDescription, htmlDescription, image) values (?, ?, ?, ?)";
+        String sql4 = "insert into productlines(productLine, textDescription, htmlDescription, image) values ('?', ?, ?, ?)";
+        String sql5 = "insert into productlines(productLine, textDescription, htmlDescription, image) values ('?', ?, ?, ?)";
+
+        System.out.println(Arrays.toString(jdbcConcept.batchUpdatePreparedStatement(sql3,
+                Arrays.asList(
+                        Arrays.asList("1", "1", null, null),
+                        Arrays.asList("2", "2", null, null),
+                        Arrays.asList("3", "3", null, null),
+                        Arrays.asList("4", "4", null, null)
+                )
+        )));
     }
 }

@@ -1,0 +1,57 @@
+# CREATE DATABASE [IF NOT EXISTS] database_name
+# [CHARACTER SET charset_name]
+# [COLLATE collation_name]
+DROP DATABASE IF EXISTS `shopping`;
+CREATE DATABASE shopping;
+# CHARACTER SET utf8
+# COLLATE utf8_unicode_ci
+USE shopping;
+
+# ROLE
+DROP TABLE IF EXISTS `ROLE`;
+CREATE  TABLE ROLE (
+    `id` int,
+    `name` varchar(20)
+)ENGINE = InnoDB Default CHARSET = latin1;;
+
+# USER
+DROP TABLE IF EXISTS `USER`;
+CREATE TABLE `USER` (
+    `id` int
+)ENGINE = InnoDB Default CHARSET = latin1;;
+
+# ORDER
+DROP TABLE IF EXISTS `ORDERS`;
+CREATE TABLE `ORDERS` (
+    `id` int
+)ENGINE = InnoDB Default CHARSET = latin1;;
+
+# ORDER DETAILS
+DROP TABLE IF EXISTS `ORDER_DETAILS`;
+CREATE TABLE `ORDER_DETAILS` (
+    `id` int
+)ENGINE = InnoDB Default CHARSET = latin1;;
+
+# PRODUCT
+DROP TABLE IF EXISTS `PRODUCT`;
+CREATE TABLE `PRODUCT` (
+    `id` int
+)ENGINE = InnoDB Default CHARSET = latin1;;
+
+# GALLERY
+DROP TABLE IF EXISTS `GALLERY`;
+CREATE TABLE `GALLERY` (
+    `id` int
+)ENGINE = InnoDB Default CHARSET = latin1;;
+
+# CATEGORY
+DROP TABLE IF EXISTS `CATEGORY`;
+CREATE TABLE `CATEGORY` (
+    `id` int
+)ENGINE = InnoDB Default CHARSET = latin1;;
+
+# FEEDBACK
+DROP TABLE IF EXISTS `FEEDBACk`;
+CREATE TABLE `FEEDBACK` (
+    `id` int
+)ENGINE = InnoDB Default CHARSET = latin1;
