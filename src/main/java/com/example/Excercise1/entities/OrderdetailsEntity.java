@@ -101,4 +101,29 @@ public class OrderdetailsEntity implements ValueObject {
         params.add(this.orderLineNumber);
         return params;
     }
+
+    @Override
+    public void clear() {
+
+    }
+
+    @Override
+    public String getDeleteSql() {
+        return null;
+    }
+
+    @Override
+    public String getInsertSql() {
+        return null;
+    }
+
+    @Override
+    public String getUpdateSql() {
+        return null;
+    }
+
+    @Override
+    public String getSelectSql() {
+        return null;
+    }
 }

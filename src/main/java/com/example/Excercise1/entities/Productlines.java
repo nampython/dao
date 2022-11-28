@@ -11,13 +11,13 @@ public class Productlines implements ValueObject {
     private String productLine;
     private String textDescription;
     private String htmlDescription;
-    private String img;
+    private String image;
 
-    public Productlines(String productLine, String textDescription, String htmlDescription, String img) {
+    public Productlines(String productLine, String textDescription, String htmlDescription, String image) {
         this.productLine = productLine;
         this.textDescription = textDescription;
         this.htmlDescription = htmlDescription;
-        this.img = img;
+        this.image = image;
     }
 
     public Productlines() {
@@ -47,20 +47,17 @@ public class Productlines implements ValueObject {
         this.htmlDescription = htmlDescription;
     }
 
-    public String getImg() {
-        return img;
+    public String getImage() {
+        return image;
     }
 
-    public void setImg(String img) {
-        this.img = img;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     @Override
     public void parseSql(ResultSet rs) throws SQLException {
-        this.productLine = rs.getString("productLine");
-        this.textDescription = rs.getString("textDescription");
-        this.htmlDescription = rs.getString("htmlDescription");
-        this.img = rs.getString("image");
+        CommonEntities.processesParseSql(this, rs);
     }
 
     @Override
@@ -83,10 +80,35 @@ public class Productlines implements ValueObject {
     public List<Object> getParams() {
         List<Object> objects = new ArrayList<>();
         objects.add(this.productLine);
-        objects.add(this.img);
+        objects.add(this.image);
         objects.add(this.htmlDescription);
         objects.add(this.textDescription);
         return objects;
+    }
+
+    @Override
+    public void clear() {
+        CommonEntities.processClear(this);
+    }
+
+    @Override
+    public String getDeleteSql() {
+        return null;
+    }
+
+    @Override
+    public String getInsertSql() {
+        return null;
+    }
+
+    @Override
+    public String getUpdateSql() {
+        return null;
+    }
+
+    @Override
+    public String getSelectSql() {
+        return null;
     }
 
     @Override
@@ -95,7 +117,7 @@ public class Productlines implements ValueObject {
                 "productLine='" + productLine + '\'' +
                 ", textDescription='" + textDescription + '\'' +
                 ", htmlDescription='" + htmlDescription + '\'' +
-                ", img='" + img + '\'' +
+                ", image='" + image + '\'' +
                 '}';
     }
 }

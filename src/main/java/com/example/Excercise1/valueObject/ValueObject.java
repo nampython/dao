@@ -10,5 +10,9 @@ public interface ValueObject extends Cloneable{
     Object clone() throws CloneNotSupportedException;
     String getExecuteSql();
     List<Object> getParams();
-
+    void clear();
+    String getDeleteSql();
+    String getInsertSql();
+    String getUpdateSql();
+    String getSelectSql();
 }

@@ -7,7 +7,7 @@
     <version>13.05.20</version>
     <name>eyeglassdao</name>
     <description>dao</description>
-
+    <!--Properties    -->
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -16,7 +16,7 @@
         <ojdbc8>12.2.0.1</ojdbc8>
         <log4j-core>2.17.1</log4j-core>
     </properties>
-
+    <!--  Dependencies  -->
     <dependencies>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -50,7 +50,6 @@
             <artifactId>log4j-core</artifactId>
             <version>${log4j-core}</version>
         </dependency>
-
     </dependencies>
 
     <build>

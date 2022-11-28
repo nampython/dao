@@ -18,6 +18,16 @@ public class OrdersEntity implements ValueObject {
     private String comments;
     private int customerNumber;
 
+    public OrdersEntity(int orderNumber, Date orderDate, Date requiredDate, Date shippedDate, String status, String comments, int customerNumber) {
+        this.orderNumber = orderNumber;
+        this.orderDate = orderDate;
+        this.requiredDate = requiredDate;
+        this.shippedDate = shippedDate;
+        this.status = status;
+        this.comments = comments;
+        this.customerNumber = customerNumber;
+    }
+
     public int getOrderNumber() {
         return orderNumber;
     }
@@ -140,6 +150,31 @@ public class OrdersEntity implements ValueObject {
         params.add(this.status);
         params.add(this.customerNumber);
         return params;
+    }
+
+    @Override
+    public void clear() {
+
+    }
+
+    @Override
+    public String getDeleteSql() {
+        return null;
+    }
+
+    @Override
+    public String getInsertSql() {
+        return null;
+    }
+
+    @Override
+    public String getUpdateSql() {
+        return null;
+    }
+
+    @Override
+    public String getSelectSql() {
+        return null;
     }
 
 }
