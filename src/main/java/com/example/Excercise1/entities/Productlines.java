@@ -1,57 +1,35 @@
 package com.example.Excercise1.entities;
 
+import com.example.Excercise1.persistence.CommonEntities;
+import com.example.Excercise1.persistence.Database;
 import com.example.Excercise1.valueObject.ValueObject;
+import lombok.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
 public class Productlines implements ValueObject {
     private String productLine;
     private String textDescription;
     private String htmlDescription;
     private String image;
 
+    private int resultCode = 101;
+
+    private String resultCodeMessage = null;
+
+    public boolean isDirty;
+
     public Productlines(String productLine, String textDescription, String htmlDescription, String image) {
         this.productLine = productLine;
         this.textDescription = textDescription;
         this.htmlDescription = htmlDescription;
-        this.image = image;
-    }
-
-    public Productlines() {
-    }
-
-    public String getProductLine() {
-        return productLine;
-    }
-
-    public void setProductLine(String productLine) {
-        this.productLine = productLine;
-    }
-
-    public String getTextDescription() {
-        return textDescription;
-    }
-
-    public void setTextDescription(String textDescription) {
-        this.textDescription = textDescription;
-    }
-
-    public String getHtmlDescription() {
-        return htmlDescription;
-    }
-
-    public void setHtmlDescription(String htmlDescription) {
-        this.htmlDescription = htmlDescription;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
         this.image = image;
     }
 
@@ -72,18 +50,12 @@ public class Productlines implements ValueObject {
 
     @Override
     public String getExecuteSql() {
-        String sql = "insert into productlines(productLine, textDescription, htmlDescription, image) values (?, ?, ?, ?)";
-        return sql;
+        return CommonEntities.getExecuteSql(this.getResultCode());
     }
 
     @Override
     public List<Object> getParams() {
-        List<Object> objects = new ArrayList<>();
-        objects.add(this.productLine);
-        objects.add(this.image);
-        objects.add(this.htmlDescription);
-        objects.add(this.textDescription);
-        return objects;
+        return CommonEntities.getParams(this);
     }
 
     @Override
@@ -92,32 +64,22 @@ public class Productlines implements ValueObject {
     }
 
     @Override
-    public String getDeleteSql() {
-        return null;
+    public String getSelectSql() {
+        return Database.generatedSqlQuery().get("productlines").get(1);
     }
 
     @Override
-    public String getInsertSql() {
-        return null;
+    public String getDeleteSql() {
+        return Database.generatedSqlQuery().get("productlines").get(2);
     }
 
     @Override
     public String getUpdateSql() {
-        return null;
+        return Database.generatedSqlQuery().get("productlines").get(3);
     }
 
     @Override
-    public String getSelectSql() {
-        return null;
-    }
-
-    @Override
-    public String toString() {
-        return "Productlines{" +
-                "productLine='" + productLine + '\'' +
-                ", textDescription='" + textDescription + '\'' +
-                ", htmlDescription='" + htmlDescription + '\'' +
-                ", image='" + image + '\'' +
-                '}';
+    public String getInsertSql() {
+        return Database.generatedSqlQuery().get("productlines").get(4);
     }
 }

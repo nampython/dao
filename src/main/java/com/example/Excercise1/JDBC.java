@@ -1,13 +1,10 @@
 package com.example.Excercise1;
 
-import com.example.Excercise1.constants.Database;
-import com.example.Excercise1.entities.*;
+import com.example.Excercise1.entities.Productlines;
+import com.example.Excercise1.persistence.Database;
 import com.example.Excercise1.repository.*;
 
-import java.math.BigDecimal;
 import java.sql.*;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -19,11 +16,15 @@ public class JDBC {
         Dao dao = new DaoImpl();
 //        StoredProcedures storedProcedures = new StoredProceduresImpl();
 //        JdbcConcept jdbcConcept = new JdbcConceptImpl();
-//        Productlines productlines = new Productlines();
-//        productlines.setProductLine("11");
-//        productlines.setTextDescription("11");
-//        productlines.setHtmlDescription("11");
-//        productlines.setImage("11");
+        Productlines productlines = new Productlines();
+        productlines.setProductLine("11");
+        productlines.setTextDescription("11");
+        productlines.setHtmlDescription("11");
+        productlines.setImage("11");
+        List<Object> params = productlines.getParams();
+        for (Object o : params) {
+            System.out.println(o);
+        }
 //        dao.setValueObject(productlines);
         String sql1 = "getOfficeByCountry";
         String sql2 = "GetOrderCountByStatus";
@@ -48,8 +49,9 @@ public class JDBC {
 //        List<Object> params = ordersEntity.getParams();
 //        ResultSet rs = null;
 //        customersEntity.parseSql(rs);
-        Map<String, List<String>> map = Database.generatedSqlQuery();
-        List<String> customers = map.get("customers");
-        customers.forEach(System.out::println);
+//        Map<String, List<String>> map = Database.generatedSqlQuery();
+//        List<String> customers = map.get("customers");
+//        customers.forEach(System.out::println);
     }
+//    Map<'Customer', Map<'update', '...', >>
 }

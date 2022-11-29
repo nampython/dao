@@ -1,4 +1,4 @@
-package com.example.Excercise1.entities;
+package com.example.Excercise1.persistence;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import static com.example.Excercise1.constants.Database.*;
+import static com.example.Excercise1.persistence.Database.*;
 import static com.example.Excercise1.constants.ResultCode.*;
 
 public class CommonEntities {

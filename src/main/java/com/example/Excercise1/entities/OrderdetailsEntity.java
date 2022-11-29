@@ -1,14 +1,20 @@
 package com.example.Excercise1.entities;
 
+import com.example.Excercise1.persistence.CommonEntities;
+import com.example.Excercise1.persistence.Database;
 import com.example.Excercise1.valueObject.ValueObject;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
 public class OrderdetailsEntity implements ValueObject {
     private int orderNumber;
     private String productCode;
@@ -16,67 +22,24 @@ public class OrderdetailsEntity implements ValueObject {
     private BigDecimal priceEach;
     private short orderLineNumber;
 
-    public int getOrderNumber() {
-        return orderNumber;
-    }
+    private int resultCode = 101;
 
-    public void setOrderNumber(int orderNumber) {
+    private String resultCodeMessage = null;
+
+    public boolean isDirty;
+
+    public OrderdetailsEntity(int orderNumber, String productCode, int quantityOrdered, BigDecimal priceEach, short orderLineNumber) {
         this.orderNumber = orderNumber;
-    }
-
-    public String getProductCode() {
-        return productCode;
-    }
-
-    public void setProductCode(String productCode) {
         this.productCode = productCode;
-    }
-
-    public int getQuantityOrdered() {
-        return quantityOrdered;
-    }
-
-    public void setQuantityOrdered(int quantityOrdered) {
         this.quantityOrdered = quantityOrdered;
-    }
-
-    public BigDecimal getPriceEach() {
-        return priceEach;
-    }
-
-    public void setPriceEach(BigDecimal priceEach) {
         this.priceEach = priceEach;
-    }
-
-    public short getOrderLineNumber() {
-        return orderLineNumber;
-    }
-
-    public void setOrderLineNumber(short orderLineNumber) {
         this.orderLineNumber = orderLineNumber;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        OrderdetailsEntity that = (OrderdetailsEntity) o;
-        return orderNumber == that.orderNumber && quantityOrdered == that.quantityOrdered && orderLineNumber == that.orderLineNumber && Objects.equals(productCode, that.productCode) && Objects.equals(priceEach, that.priceEach);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(orderNumber, productCode, quantityOrdered, priceEach, orderLineNumber);
-    }
-
-    @Override
-    public void parseSql(ResultSet var1) throws SQLException {
-
-    }
-
-    @Override
-    public void setResultCode(int var1) {
-
+    public void parseSql(ResultSet rs) throws SQLException {
+        this.clear();
+        CommonEntities.processesParseSql(this, rs);
     }
 
     @Override
@@ -86,44 +49,36 @@ public class OrderdetailsEntity implements ValueObject {
 
     @Override
     public String getExecuteSql() {
-        String sql = "INSERT INTO orderdetails(orderNumber, productCode, quantityOrdered, priceEach, orderLineNumber)" +
-                " VALUES(?, ?, ?, ?, ?);";
-        return sql;
+        return CommonEntities.getExecuteSql(this.getResultCode());
     }
 
     @Override
     public List<Object> getParams() {
-        List<Object> params = new ArrayList<>();
-        params.add(this.orderNumber);
-        params.add(this.productCode);
-        params.add(this.quantityOrdered);
-        params.add(this.priceEach);
-        params.add(this.orderLineNumber);
-        return params;
+        return CommonEntities.getParams(this);
     }
 
     @Override
     public void clear() {
-
-    }
-
-    @Override
-    public String getDeleteSql() {
-        return null;
-    }
-
-    @Override
-    public String getInsertSql() {
-        return null;
-    }
-
-    @Override
-    public String getUpdateSql() {
-        return null;
+        CommonEntities.processClear(this);
     }
 
     @Override
     public String getSelectSql() {
-        return null;
+        return Database.generatedSqlQuery().get("orderdetails").get(1);
+    }
+
+    @Override
+    public String getDeleteSql() {
+        return Database.generatedSqlQuery().get("orderdetails").get(2);
+    }
+
+    @Override
+    public String getUpdateSql() {
+        return Database.generatedSqlQuery().get("orderdetails").get(3);
+    }
+
+    @Override
+    public String getInsertSql() {
+        return Database.generatedSqlQuery().get("orderdetails").get(4);
     }
 }

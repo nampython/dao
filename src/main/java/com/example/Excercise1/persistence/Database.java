@@ -1,4 +1,4 @@
-package com.example.Excercise1.constants;
+package com.example.Excercise1.persistence;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -74,7 +74,7 @@ public class Database {
     private static List<String> processTable(String nameTable, List<String> columnName) {
         List<String> queries = new ArrayList<>();
         String querySelect = String.format("select * from %s", nameTable);
-        String queryDelete = String.format("delete from %s where %s", nameTable, columnName.get(0));
+        String queryDelete = String.format("delete from %s where %s = ?", nameTable, columnName.get(0));
         queries.add(querySelect);
         queries.add(queryDelete);
 

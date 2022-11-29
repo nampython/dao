@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import static com.example.Excercise1.constants.Database.*;
+import static com.example.Excercise1.persistence.Database.*;
 import static com.example.Excercise1.constants.MessageException.*;
 
 public class FunctionalCommon {

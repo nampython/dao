@@ -1,13 +1,19 @@
 package com.example.Excercise1.entities;
 
+import com.example.Excercise1.persistence.CommonEntities;
+import com.example.Excercise1.persistence.Database;
 import com.example.Excercise1.valueObject.ValueObject;
+import lombok.*;
 
-import javax.persistence.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Objects;
 
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
 public class OfficesEntity implements ValueObject {
     private String officeCode;
     private String city;
@@ -18,15 +24,9 @@ public class OfficesEntity implements ValueObject {
     private String country;
     private String postalCode;
     private String territory;
-
     private int resultCode = 101;
-
     private String resultCodeMessage = null;
-
     public boolean isDirty;
-
-    public OfficesEntity() {
-    }
 
     public OfficesEntity(String officeCode, String city, String phone, String addressLine1, String addressLine2, String state, String country, String postalCode, String territory) {
         this.officeCode = officeCode;
@@ -40,112 +40,9 @@ public class OfficesEntity implements ValueObject {
         this.territory = territory;
     }
 
-    public int getResultCode() {
-        return resultCode;
-    }
-
-    public String getResultCodeMessage() {
-        return resultCodeMessage;
-    }
-
-    public void setResultCodeMessage(String resultCodeMessage) {
-        this.resultCodeMessage = resultCodeMessage;
-    }
-
-    public boolean isDirty() {
-        return isDirty;
-    }
-
-    public void setDirty(boolean dirty) {
-        isDirty = dirty;
-    }
-
-    public String getOfficeCode() {
-        return officeCode;
-    }
-
-    public void setOfficeCode(String officeCode) {
-        this.officeCode = officeCode;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getAddressLine1() {
-        return addressLine1;
-    }
-
-    public void setAddressLine1(String addressLine1) {
-        this.addressLine1 = addressLine1;
-    }
-
-    public String getAddressLine2() {
-        return addressLine2;
-    }
-
-    public void setAddressLine2(String addressLine2) {
-        this.addressLine2 = addressLine2;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getPostalCode() {
-        return postalCode;
-    }
-
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
-    }
-
-    public String getTerritory() {
-        return territory;
-    }
-
-    public void setTerritory(String territory) {
-        this.territory = territory;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        OfficesEntity that = (OfficesEntity) o;
-        return Objects.equals(officeCode, that.officeCode) && Objects.equals(city, that.city) && Objects.equals(phone, that.phone) && Objects.equals(addressLine1, that.addressLine1) && Objects.equals(addressLine2, that.addressLine2) && Objects.equals(state, that.state) && Objects.equals(country, that.country) && Objects.equals(postalCode, that.postalCode) && Objects.equals(territory, that.territory);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(officeCode, city, phone, addressLine1, addressLine2, state, country, postalCode, territory);
-    }
-
     @Override
     public void parseSql(ResultSet rs) throws SQLException {
+        this.clear();
         CommonEntities.processesParseSql(this, rs);
     }
 
@@ -175,22 +72,22 @@ public class OfficesEntity implements ValueObject {
     }
 
     @Override
-    public String getDeleteSql() {
-        return null;
+    public String getSelectSql() {
+        return Database.generatedSqlQuery().get("offices").get(1);
     }
 
     @Override
-    public String getInsertSql() {
-        return null;
+    public String getDeleteSql() {
+        return Database.generatedSqlQuery().get("offices").get(2);
     }
 
     @Override
     public String getUpdateSql() {
-        return null;
+        return Database.generatedSqlQuery().get("offices").get(3);
     }
 
     @Override
-    public String getSelectSql() {
-        return null;
+    public String getInsertSql() {
+        return Database.generatedSqlQuery().get("offices").get(4);
     }
 }

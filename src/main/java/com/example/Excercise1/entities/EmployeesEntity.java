@@ -1,17 +1,19 @@
 package com.example.Excercise1.entities;
 
+import com.example.Excercise1.persistence.CommonEntities;
+import com.example.Excercise1.persistence.Database;
 import com.example.Excercise1.valueObject.ValueObject;
+import lombok.*;
 
-import javax.persistence.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import static com.example.Excercise1.constants.Database.*;
-import static com.example.Excercise1.constants.ResultCode.*;
-
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
 public class EmployeesEntity implements ValueObject {
     private int employeeNumber;
     private String lastName;
@@ -25,9 +27,6 @@ public class EmployeesEntity implements ValueObject {
     private String resultCodeMessage = null;
     public boolean isDirty;
 
-    public EmployeesEntity() {
-    }
-
     public EmployeesEntity(int employeeNumber, String lastName, String firstName, String extension, String email, String officeCode, Integer reportsTo, String jobTitle) {
         this.employeeNumber = employeeNumber;
         this.lastName = lastName;
@@ -39,107 +38,10 @@ public class EmployeesEntity implements ValueObject {
         this.jobTitle = jobTitle;
     }
 
-    public int getResultCode() {
-        return resultCode;
-    }
-
-    public String getResultCodeMessage() {
-        return resultCodeMessage;
-    }
-
-    public void setResultCodeMessage(String resultCodeMessage) {
-        this.resultCodeMessage = resultCodeMessage;
-    }
-
-    public boolean isDirty() {
-        return isDirty;
-    }
-
-    public void setDirty(boolean dirty) {
-        isDirty = dirty;
-    }
-
-    public int getEmployeeNumber() {
-        return employeeNumber;
-    }
-
-    public void setEmployeeNumber(int employeeNumber) {
-        this.employeeNumber = employeeNumber;
-    }
-
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getExtension() {
-        return extension;
-    }
-
-    public void setExtension(String extension) {
-        this.extension = extension;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getOfficeCode() {
-        return officeCode;
-    }
-
-    public void setOfficeCode(String officeCode) {
-        this.officeCode = officeCode;
-    }
-
-    public Integer getReportsTo() {
-        return reportsTo;
-    }
-
-    public void setReportsTo(Integer reportsTo) {
-        this.reportsTo = reportsTo;
-    }
-
-    public String getJobTitle() {
-        return jobTitle;
-    }
-
-    public void setJobTitle(String jobTitle) {
-        this.jobTitle = jobTitle;
-    }
-
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        EmployeesEntity that = (EmployeesEntity) o;
-        return employeeNumber == that.employeeNumber && Objects.equals(lastName, that.lastName) && Objects.equals(firstName, that.firstName) && Objects.equals(extension, that.extension) && Objects.equals(email, that.email) && Objects.equals(officeCode, that.officeCode) && Objects.equals(reportsTo, that.reportsTo) && Objects.equals(jobTitle, that.jobTitle);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(employeeNumber, lastName, firstName, extension, email, officeCode, reportsTo, jobTitle);
-    }
-
-    @Override
-    public void parseSql(ResultSet var1) throws SQLException {
-
+    public void parseSql(ResultSet rs) throws SQLException {
+        this.clear();
+        CommonEntities.processesParseSql(this, rs);
     }
 
     @Override
@@ -154,20 +56,7 @@ public class EmployeesEntity implements ValueObject {
 
     @Override
     public String getExecuteSql() {
-        String sql = null;
-        switch (this.getResultCode() ) {
-            case INSERT_CODE : {
-                sql = CUSTOMER_INSERT_SQL;
-            }
-            case UPDATE_CODE : {
-                sql = CUSTOMER_UPDATE_SQL;
-
-            }
-            case DELETE_CODE : {
-                sql = CUSTOMER_DELETE_SQL;
-            }
-        }
-        return sql;
+        return CommonEntities.getExecuteSql(this.getResultCode());
     }
 
     @Override
@@ -181,22 +70,22 @@ public class EmployeesEntity implements ValueObject {
     }
 
     @Override
-    public String getDeleteSql() {
-        return EMPLOYEES_DELETE_SQL;
+    public String getSelectSql() {
+        return Database.generatedSqlQuery().get("employees").get(1);
     }
 
     @Override
-    public String getInsertSql() {
-        return EMPLOYEES_INSERT_SQL;
+    public String getDeleteSql() {
+        return Database.generatedSqlQuery().get("employees").get(2);
     }
 
     @Override
     public String getUpdateSql() {
-        return EMPLOYEES_UPDATE_SQL;
+        return Database.generatedSqlQuery().get("employees").get(3);
     }
 
     @Override
-    public String getSelectSql() {
-        return EMPLOYEES_SELECT_SQL;
+    public String getInsertSql() {
+        return Database.generatedSqlQuery().get("employees").get(4);
     }
 }

@@ -1,58 +1,87 @@
 package com.example.Excercise1.entities;
 
-import javax.persistence.*;
+import com.example.Excercise1.persistence.CommonEntities;
+import com.example.Excercise1.persistence.Database;
+import com.example.Excercise1.valueObject.ValueObject;
+import lombok.*;
 import java.math.BigDecimal;
 import java.sql.Date;
-import java.util.Objects;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
-public class PaymentsEntity {
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
+public class PaymentsEntity implements ValueObject {
     private int customerNumber;
     private String checkNumber;
     private Date paymentDate;
     private BigDecimal amount;
 
-    public int getCustomerNumber() {
-        return customerNumber;
-    }
+    private int resultCode = 101;
 
-    public void setCustomerNumber(int customerNumber) {
+    private String resultCodeMessage = null;
+
+    public boolean isDirty;
+
+    public PaymentsEntity(int customerNumber, String checkNumber, Date paymentDate, BigDecimal amount) {
         this.customerNumber = customerNumber;
-    }
-
-    public String getCheckNumber() {
-        return checkNumber;
-    }
-
-    public void setCheckNumber(String checkNumber) {
         this.checkNumber = checkNumber;
-    }
-
-    public Date getPaymentDate() {
-        return paymentDate;
-    }
-
-    public void setPaymentDate(Date paymentDate) {
         this.paymentDate = paymentDate;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PaymentsEntity that = (PaymentsEntity) o;
-        return customerNumber == that.customerNumber && Objects.equals(checkNumber, that.checkNumber) && Objects.equals(paymentDate, that.paymentDate) && Objects.equals(amount, that.amount);
+    public void parseSql(ResultSet rs) throws SQLException {
+        this.clear();
+        CommonEntities.processesParseSql(this, rs);
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(customerNumber, checkNumber, paymentDate, amount);
+    public void setResultCode(int var1) {
+
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return null;
+    }
+
+    @Override
+    public String getExecuteSql() {
+        return CommonEntities.getExecuteSql(this.getResultCode());
+    }
+
+    @Override
+    public List<Object> getParams() {
+        return CommonEntities.getParams(this);
+    }
+
+    @Override
+    public void clear() {
+        CommonEntities.processClear(this);
+    }
+
+    @Override
+    public String getSelectSql() {
+        return Database.generatedSqlQuery().get("payments").get(1);
+    }
+
+    @Override
+    public String getDeleteSql() {
+        return Database.generatedSqlQuery().get("payments").get(2);
+    }
+
+    @Override
+    public String getUpdateSql() {
+        return Database.generatedSqlQuery().get("payments").get(3);
+    }
+
+    @Override
+    public String getInsertSql() {
+        return Database.generatedSqlQuery().get("payments").get(4);
     }
 }
