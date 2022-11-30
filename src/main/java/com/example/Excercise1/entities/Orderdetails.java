@@ -4,7 +4,8 @@ import com.example.Excercise1.persistence.CommonEntities;
 import com.example.Excercise1.persistence.Database;
 import com.example.Excercise1.valueObject.ValueObject;
 import lombok.*;
-import java.sql.Date;
+
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -14,14 +15,12 @@ import java.util.List;
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor
-public class OrdersEntity implements ValueObject {
+public class Orderdetails implements ValueObject {
     private int orderNumber;
-    private Date orderDate;
-    private Date requiredDate;
-    private Date shippedDate;
-    private String status;
-    private String comments;
-    private int customerNumber;
+    private String productCode;
+    private int quantityOrdered;
+    private BigDecimal priceEach;
+    private short orderLineNumber;
 
     private int resultCode = 101;
 
@@ -29,25 +28,18 @@ public class OrdersEntity implements ValueObject {
 
     public boolean isDirty;
 
-    public OrdersEntity(int orderNumber, Date orderDate, Date requiredDate, Date shippedDate, String status, String comments, int customerNumber) {
+    public Orderdetails(int orderNumber, String productCode, int quantityOrdered, BigDecimal priceEach, short orderLineNumber) {
         this.orderNumber = orderNumber;
-        this.orderDate = orderDate;
-        this.requiredDate = requiredDate;
-        this.shippedDate = shippedDate;
-        this.status = status;
-        this.comments = comments;
-        this.customerNumber = customerNumber;
+        this.productCode = productCode;
+        this.quantityOrdered = quantityOrdered;
+        this.priceEach = priceEach;
+        this.orderLineNumber = orderLineNumber;
     }
 
     @Override
     public void parseSql(ResultSet rs) throws SQLException {
         this.clear();
         CommonEntities.processesParseSql(this, rs);
-    }
-
-    @Override
-    public void setResultCode(int var1) {
-
     }
 
     @Override
@@ -72,22 +64,21 @@ public class OrdersEntity implements ValueObject {
 
     @Override
     public String getSelectSql() {
-        return Database.generatedSqlQuery().get("orders").get(1);
+        return Database.generatedSqlQuery().get("orderdetails").get(1);
     }
 
     @Override
     public String getDeleteSql() {
-        return Database.generatedSqlQuery().get("orders").get(2);
+        return Database.generatedSqlQuery().get("orderdetails").get(2);
     }
 
     @Override
     public String getUpdateSql() {
-        return Database.generatedSqlQuery().get("orders").get(3);
+        return Database.generatedSqlQuery().get("orderdetails").get(3);
     }
 
     @Override
     public String getInsertSql() {
-        return Database.generatedSqlQuery().get("orders").get(4);
+        return Database.generatedSqlQuery().get("orderdetails").get(4);
     }
-
 }

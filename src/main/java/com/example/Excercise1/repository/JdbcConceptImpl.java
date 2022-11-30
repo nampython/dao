@@ -7,7 +7,6 @@ import static com.example.Excercise1.repository.FunctionalCommon.getConnection;
 import static com.example.Excercise1.repository.FunctionalCommon.setSearchParams;
 
 public class JdbcConceptImpl implements JdbcConcept {
-
     @Override
     public int getAutoIncrementValue(String sql) {
         ResultSet rs = null;

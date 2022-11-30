@@ -4,7 +4,6 @@ import com.example.Excercise1.persistence.CommonEntities;
 import com.example.Excercise1.persistence.Database;
 import com.example.Excercise1.valueObject.ValueObject;
 import lombok.*;
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,11 +14,14 @@ import java.util.List;
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor
-public class PaymentsEntity implements ValueObject {
+public class Orders implements ValueObject {
+    private int orderNumber;
+    private Date orderDate;
+    private Date requiredDate;
+    private Date shippedDate;
+    private String status;
+    private String comments;
     private int customerNumber;
-    private String checkNumber;
-    private Date paymentDate;
-    private BigDecimal amount;
 
     private int resultCode = 101;
 
@@ -27,11 +29,14 @@ public class PaymentsEntity implements ValueObject {
 
     public boolean isDirty;
 
-    public PaymentsEntity(int customerNumber, String checkNumber, Date paymentDate, BigDecimal amount) {
+    public Orders(int orderNumber, Date orderDate, Date requiredDate, Date shippedDate, String status, String comments, int customerNumber) {
+        this.orderNumber = orderNumber;
+        this.orderDate = orderDate;
+        this.requiredDate = requiredDate;
+        this.shippedDate = shippedDate;
+        this.status = status;
+        this.comments = comments;
         this.customerNumber = customerNumber;
-        this.checkNumber = checkNumber;
-        this.paymentDate = paymentDate;
-        this.amount = amount;
     }
 
     @Override
@@ -67,21 +72,22 @@ public class PaymentsEntity implements ValueObject {
 
     @Override
     public String getSelectSql() {
-        return Database.generatedSqlQuery().get("payments").get(1);
+        return Database.generatedSqlQuery().get("orders").get(1);
     }
 
     @Override
     public String getDeleteSql() {
-        return Database.generatedSqlQuery().get("payments").get(2);
+        return Database.generatedSqlQuery().get("orders").get(2);
     }
 
     @Override
     public String getUpdateSql() {
-        return Database.generatedSqlQuery().get("payments").get(3);
+        return Database.generatedSqlQuery().get("orders").get(3);
     }
 
     @Override
     public String getInsertSql() {
-        return Database.generatedSqlQuery().get("payments").get(4);
+        return Database.generatedSqlQuery().get("orders").get(4);
     }
+
 }
