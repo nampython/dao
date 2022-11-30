@@ -14,7 +14,7 @@ import java.util.List;
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor
-public class EmployeesEntity implements ValueObject {
+public class Employees implements ValueObject {
     private int employeeNumber;
     private String lastName;
     private String firstName;
@@ -27,7 +27,7 @@ public class EmployeesEntity implements ValueObject {
     private String resultCodeMessage = null;
     public boolean isDirty;
 
-    public EmployeesEntity(int employeeNumber, String lastName, String firstName, String extension, String email, String officeCode, Integer reportsTo, String jobTitle) {
+    public Employees(int employeeNumber, String lastName, String firstName, String extension, String email, String officeCode, Integer reportsTo, String jobTitle) {
         this.employeeNumber = employeeNumber;
         this.lastName = lastName;
         this.firstName = firstName;
