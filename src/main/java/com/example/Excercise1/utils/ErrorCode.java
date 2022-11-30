@@ -1,8 +1,13 @@
 package com.example.Excercise1.utils;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
 import java.util.*;
 
+@Getter
+@Setter
 public class ErrorCode implements Serializable {
     public final Map<Integer, List<String>> errorMsg = new LinkedHashMap<>();
     private boolean disableSubmit = false;
@@ -55,6 +60,26 @@ public class ErrorCode implements Serializable {
                 errorMsgList.add(new AbstractMap.SimpleEntry<>(var1, msg));
             }
           }
+        return errorMsgList;
+    }
+
+    /**
+     * use to get list of error messages
+     * @return list of error messages
+     */
+    public List<String> getErrorMessageList() {
+        List<String> errorMsgList = new ArrayList<String>();
+        Enumeration<Integer> errNum = Collections.enumeration(this.errorMsg.keySet());
+        Enumeration<String> errMsg =  null;
+
+        while (errNum.hasMoreElements()) {
+            int errcd = errNum.nextElement();
+            errMsg = Collections.enumeration(this.errorMsg.get(errcd));
+            while (errMsg.hasMoreElements()) {
+                String msg = errMsg.nextElement();
+                errorMsgList.add(msg);
+            }
+        }
         return errorMsgList;
     }
 }
