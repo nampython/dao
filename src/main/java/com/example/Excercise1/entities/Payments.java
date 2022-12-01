@@ -35,6 +35,10 @@ public class Payments implements ValueObject {
     }
 
     @Override
+    public void clear() {
+        CommonEntities.processClear(this);
+    }
+    @Override
     public void parseSql(ResultSet rs) throws SQLException {
         this.clear();
         CommonEntities.processesParseSql(this, rs);
@@ -46,11 +50,6 @@ public class Payments implements ValueObject {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        return null;
-    }
-
-    @Override
     public String getExecuteSql() {
         return CommonEntities.getExecuteSql(this.getResultCode());
     }
@@ -58,11 +57,6 @@ public class Payments implements ValueObject {
     @Override
     public List<Object> getParams() {
         return CommonEntities.getParams(this);
-    }
-
-    @Override
-    public void clear() {
-        CommonEntities.processClear(this);
     }
 
     @Override

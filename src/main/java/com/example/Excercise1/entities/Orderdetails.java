@@ -37,14 +37,14 @@ public class Orderdetails implements ValueObject {
     }
 
     @Override
-    public void parseSql(ResultSet rs) throws SQLException {
-        this.clear();
-        CommonEntities.processesParseSql(this, rs);
+    public void clear() {
+        CommonEntities.processClear(this);
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        return null;
+    public void parseSql(ResultSet rs) throws SQLException {
+        this.clear();
+        CommonEntities.processesParseSql(this, rs);
     }
 
     @Override
@@ -55,11 +55,6 @@ public class Orderdetails implements ValueObject {
     @Override
     public List<Object> getParams() {
         return CommonEntities.getParams(this);
-    }
-
-    @Override
-    public void clear() {
-        CommonEntities.processClear(this);
     }
 
     @Override

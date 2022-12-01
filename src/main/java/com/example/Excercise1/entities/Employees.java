@@ -39,6 +39,11 @@ public class Employees implements ValueObject {
     }
 
     @Override
+    public void clear() {
+        CommonEntities.processClear(this);
+    }
+
+    @Override
     public void parseSql(ResultSet rs) throws SQLException {
         this.clear();
         CommonEntities.processesParseSql(this, rs);
@@ -47,11 +52,6 @@ public class Employees implements ValueObject {
     @Override
     public void setResultCode(int var1) {
 
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return null;
     }
 
     @Override
@@ -64,28 +64,24 @@ public class Employees implements ValueObject {
         return CommonEntities.getParams(this);
     }
 
-    @Override
-    public void clear() {
-        CommonEntities.processClear(this);
-    }
 
     @Override
     public String getSelectSql() {
-        return Database.generatedSqlQuery().get("employees").get(1);
+        return Database.generatedSqlQuery().get("employees").get(0);
     }
 
     @Override
     public String getDeleteSql() {
-        return Database.generatedSqlQuery().get("employees").get(2);
+        return Database.generatedSqlQuery().get("employees").get(1);
     }
 
     @Override
     public String getUpdateSql() {
-        return Database.generatedSqlQuery().get("employees").get(3);
+        return Database.generatedSqlQuery().get("employees").get(2);
     }
 
     @Override
     public String getInsertSql() {
-        return Database.generatedSqlQuery().get("employees").get(4);
+        return Database.generatedSqlQuery().get("employees").get(3);
     }
 }

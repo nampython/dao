@@ -4,6 +4,7 @@ import com.example.Excercise1.persistence.CommonEntities;
 import com.example.Excercise1.persistence.Database;
 import com.example.Excercise1.valueObject.ValueObject;
 import lombok.*;
+
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,6 +41,11 @@ public class Orders implements ValueObject {
     }
 
     @Override
+    public void clear() {
+        CommonEntities.processClear(this);
+    }
+
+    @Override
     public void parseSql(ResultSet rs) throws SQLException {
         this.clear();
         CommonEntities.processesParseSql(this, rs);
@@ -51,11 +57,6 @@ public class Orders implements ValueObject {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        return null;
-    }
-
-    @Override
     public String getExecuteSql() {
         return CommonEntities.getExecuteSql(this.getResultCode());
     }
@@ -63,11 +64,6 @@ public class Orders implements ValueObject {
     @Override
     public List<Object> getParams() {
         return CommonEntities.getParams(this);
-    }
-
-    @Override
-    public void clear() {
-        CommonEntities.processClear(this);
     }
 
     @Override

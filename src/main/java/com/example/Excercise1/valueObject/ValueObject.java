@@ -7,7 +7,6 @@ import java.util.List;
 public interface ValueObject extends Cloneable{
     void parseSql(ResultSet var1) throws SQLException;
     void setResultCode(int var1);
-    Object clone() throws CloneNotSupportedException;
     String getExecuteSql();
     List<Object> getParams();
     void clear();

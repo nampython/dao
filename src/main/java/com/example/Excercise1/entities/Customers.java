@@ -65,11 +65,6 @@ public class Customers implements ValueObject {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        return null;
-    }
-
-    @Override
     public String getExecuteSql() {
         return CommonEntities.getExecuteSql(this.getResultCode());
     }
@@ -81,21 +76,21 @@ public class Customers implements ValueObject {
 
     @Override
     public String getSelectSql() {
-        return Database.generatedSqlQuery().get("customers").get(1);
+        return Database.generatedSqlQuery().get("customers").get(0);
     }
 
     @Override
     public String getDeleteSql() {
-        return Database.generatedSqlQuery().get("customers").get(2);
+        return Database.generatedSqlQuery().get("customers").get(1);
     }
 
     @Override
     public String getUpdateSql() {
-        return Database.generatedSqlQuery().get("customers").get(3);
+        return Database.generatedSqlQuery().get("customers").get(2);
     }
 
     @Override
     public String getInsertSql() {
-        return Database.generatedSqlQuery().get("customers").get(4);
+        return Database.generatedSqlQuery().get("customers").get(3);
     }
 }
