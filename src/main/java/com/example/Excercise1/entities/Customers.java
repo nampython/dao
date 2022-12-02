@@ -1,7 +1,7 @@
 package com.example.Excercise1.entities;
 
 import com.example.Excercise1.persistence.CommonEntities;
-import com.example.Excercise1.persistence.Database;
+import com.example.Excercise1.persistence.ProcessDatabase;
 import com.example.Excercise1.valueObject.ValueObject;
 import lombok.*;
 
@@ -76,21 +76,21 @@ public class Customers implements ValueObject {
 
     @Override
     public String getSelectSql() {
-        return Database.generatedSqlQuery().get("customers").get(0);
+        return ProcessDatabase.generatedSqlQuery().get("customers").get(0);
     }
 
     @Override
     public String getDeleteSql() {
-        return Database.generatedSqlQuery().get("customers").get(1);
+        return ProcessDatabase.generatedSqlQuery().get("customers").get(1);
     }
 
     @Override
     public String getUpdateSql() {
-        return Database.generatedSqlQuery().get("customers").get(2);
+        return ProcessDatabase.generatedSqlQuery().get("customers").get(2);
     }
 
     @Override
     public String getInsertSql() {
-        return Database.generatedSqlQuery().get("customers").get(3);
+        return ProcessDatabase.generatedSqlQuery().get("customers").get(3);
     }
 }
