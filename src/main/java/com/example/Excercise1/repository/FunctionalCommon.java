@@ -1,21 +1,18 @@
 package com.example.Excercise1.repository;
 
+import com.example.Excercise1.enviroments.EnvironmentConfiguration;
 import com.example.Excercise1.exceptions.ConnectionException;
 import com.example.Excercise1.exceptions.SetParameterException;
 import com.example.Excercise1.exceptions.StatementException;
 import com.example.Excercise1.valueObject.Value;
-
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import static com.example.Excercise1.persistence.Database.*;
 import static com.example.Excercise1.constants.MessageException.*;
 
 public class FunctionalCommon {
-    // TODO: move these variables to constants file
     /**
      * @param ps
      * @param params
@@ -96,11 +93,11 @@ public class FunctionalCommon {
 
     public static Connection getConnection() throws SQLException {
         Properties properties = new Properties();
-        properties.setProperty("user", USER);
-        properties.setProperty("password", PW);
+        properties.setProperty("user", EnvironmentConfiguration.properties().getProperty("jdbc.user"));
+        properties.setProperty("password", EnvironmentConfiguration.properties().getProperty("jdbc.password"));
         properties.setProperty("useSSL", "false");
         try {
-            return DriverManager.getConnection(URL, properties);
+            return DriverManager.getConnection(EnvironmentConfiguration.properties().getProperty("jdbc.url"), properties);
         } catch (SQLException sqlException) {
             throw new ConnectionException(FAILED_TO_GET_CONNECTION, sqlException.getCause());
         }
