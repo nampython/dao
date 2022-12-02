@@ -1,6 +1,11 @@
 package com.example.Excercise1.persistence;
 
 import com.example.Excercise1.enviroments.EnvironmentConfiguration;
+import com.example.Excercise1.exceptions.GeneratedSqlQueryException;
+import com.example.Excercise1.repository.DaoImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +14,8 @@ import java.util.Map;
 import static com.example.Excercise1.repository.FunctionalCommon.*;
 
 public class ProcessDatabase {
+
+    private static final Logger log = LogManager.getLogger(ProcessDatabase.class);
 
     // CUSTOMER TABLE
     public static final String CUSTOMER_UPDATE_SQL = "update customersGetTableName set customerName = ?, contactLastName = ?, contactFirsGetTableNametName = ?, phone = ?, addressLine1 = ?, addressLine2 = ?, city = ?, state = ?, postalCode = ?, country = ?, salesRepEmployeeNumber = ?, creditLimit = ? where customerNumber = ?";
@@ -36,8 +43,8 @@ public class ProcessDatabase {
             rsGetTableName = meta.getTables(cn.getCatalog(), null, "%", new String [] {"TABLE"});
             while (rsGetTableName.next()) {
                 String nameTable = rsGetTableName.getString(3);
+                log.info("message=Executing auto-generated sql with table: " + nameTable);
                 List<String> listOfColumName = new ArrayList<>();
-
                 st = cn.prepareStatement(sql);
                 st.setString(1, EnvironmentConfiguration.properties().getProperty("jdbc.schema"));
                 st.setString(2, nameTable);
@@ -51,13 +58,16 @@ public class ProcessDatabase {
             }
             return totalQuery;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new GeneratedSqlQueryException("Failed to generate sql query");
         }
     }
 
-//    "update customersGetTableName set customerName = ?, contactLastName = ?, contactFirsGetTableNametName = ?, phone = ?, addressLine1 = ?, addressLine2 = ?, city = ?, state = ?, postalCode = ?, country = ?, salesRepEmployeeNumber = ?, creditLimit = ? where customerNumber = ?";
-//   "insert into customersGetTableName(customerNumber, customerName, contactLastName, contactFirsGetTableNametName, phone, addressLine1, addressLine2, city, state, postalCode, country, salesRepEmployeeNumber, creditLimit) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";USTOMER_UPDATE_SQL = "update customersGetTableName set customerName = ?, contactLastName = ?, contactFirsGetTableNametName = ?, phone = ?, addressLine1 = ?, addressLine2 = ?, city = ?, state = ?, postalCode = ?, country = ?, salesRepEmployeeNumber = ?, creditLimit = ? where customerNumber = ?";
-
+    /**
+     * Use to process table to get the list of sql query based on table name
+     * @param nameTable name of the  table
+     * @param columnName column name
+     * @return List of sql queries based on table
+     */
     private static List<String> processTable(String nameTable, List<String> columnName) {
         List<String> queries = new ArrayList<>();
         String querySelect = String.format("select * from %s", nameTable);

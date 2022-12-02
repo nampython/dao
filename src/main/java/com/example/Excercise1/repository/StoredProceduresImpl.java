@@ -10,8 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import static com.example.Excercise1.constants.MessageException.FAILED_TO_LOAD_VALUE_OBJECT_BY_PRODUCER;
-import static com.example.Excercise1.constants.MessageException.FAILED_TO_LOAD_VALUE_OBJECT_BY_PRODUCER_INPUT_AND_OUTPUT_PARAMS;
+import static com.example.Excercise1.constants.MessageException.*;
 import static com.example.Excercise1.repository.FunctionalCommon.*;
 import static com.example.Excercise1.repository.FunctionalCommon.getMultipleRows;
 
@@ -19,7 +18,8 @@ public class StoredProceduresImpl implements StoredProcedures {
     private static final Logger log = LogManager.getLogger(StoredProceduresImpl.class);
 
     /**
-     * @param storedProcedureName
+     * Use to execute single stored procedures
+     * @param storedProcedureName storedProcedureName
      */
     @Override
     public List<List<Value>> executeProcedure(String storedProcedureName) {
@@ -28,6 +28,7 @@ public class StoredProceduresImpl implements StoredProcedures {
         ResultSetMetaData metaData = null;
         ResultSet rs = null;
         List<List<Value>> values = new ArrayList<>();
+
         try {
             log.info("message=Calling Stored Procedure= " + storedProcedureName);
             connection = getConnection();
@@ -37,7 +38,7 @@ public class StoredProceduresImpl implements StoredProcedures {
             getMultipleRows(rs, values);
             return values;
         } catch (SQLException e) {
-            throw new ProcedureException(FAILED_TO_LOAD_VALUE_OBJECT_BY_PRODUCER);
+            throw new ProcedureException(String.format(FAILED_TO_LOAD_VALUE_OBJECTS_BY_STORED_PRODUCER, storedProcedureName));
         } finally {
             closeStatement(callableStatement);
             closeConnection(connection);
@@ -45,9 +46,10 @@ public class StoredProceduresImpl implements StoredProcedures {
     }
 
     /**
-     * @param storedProcedureName
-     * @param params
-     * @param <T>
+     * Use to execute stored procedures with input params
+     * @param storedProcedureName storedProcedureName
+     * @param params params
+     * @param <T> T
      */
     @Override
     public <T extends ValueObject> List<List<Value>> executeProcedureWithInputParams(String storedProcedureName, List<Object> params) {
@@ -56,6 +58,7 @@ public class StoredProceduresImpl implements StoredProcedures {
         CallableStatement callableStatement = null;
         ResultSet rs = null;
         String procSql = processSql(storedProcedureName, params.size());
+
         try {
             log.debug("message=Calling Stored Procedure= " + storedProcedureName + " ,Argument= " + params);
             connection = getConnection();
@@ -66,7 +69,7 @@ public class StoredProceduresImpl implements StoredProcedures {
             getMultipleRows(rs, values);
             return values;
         } catch (SQLException e) {
-            throw new ProcedureException(String.format(FAILED_TO_LOAD_VALUE_OBJECT_BY_PRODUCER, storedProcedureName, params));
+            throw new ProcedureException(String.format(FAILED_TO_LOAD_VALUE_OBJECTS_BY_STORED_PRODUCER_WITH_INPUT_PARAMS, storedProcedureName, params));
         } finally {
             closeStatement(callableStatement);
             closeConnection(connection);
@@ -74,12 +77,10 @@ public class StoredProceduresImpl implements StoredProcedures {
     }
 
     /**
-     *
-     *
-     * @param:
-     * @param inputParams:
-     * @param outputParams:
-     * @return:
+     * Use to execute stored procedures with input and output params
+     * @param inputParams inputParams
+     * @param outputParams inputParams
+     * @return Map<Integer, Object>
      */
     @Override
     public Map<Integer, Object> executeProcedureWithInputAndOutputParams(String storedProcedureName, Map<Integer, Object> inputParams, Map<Integer, Integer> outputParams) {

@@ -13,12 +13,12 @@ import java.util.Properties;
 import static com.example.Excercise1.constants.MessageException.*;
 
 public class FunctionalCommon {
-    /**
-     * @param ps
-     * @param params
+
+    /** Use to set parameter of the object into PreparedStatement
+     * @param ps PrepareStatement
+     * @param params List of parameter
      */
     public static void setSearchParams(PreparedStatement ps, List<Object> params) {
-        // TODO - Complete this function
         if (params == null) {
             throw new NullPointerException(INVALID_PARAMETER);
         }
@@ -27,18 +27,12 @@ public class FunctionalCommon {
                 Object obj = params.get(i);
                 setParam(ps, obj, j);
             }
-        } catch (SQLException | UnsupportedOperationException  sqlException) {
-            throw new SetParameterException(FAILED_TO_SET_PARAMETER);
+        } catch (SQLException | UnsupportedOperationException  e) {
+            throw new SetParameterException(String.format(FAILED_TO_SET_PARAMETER, params), e.getCause());
         }
     }
 
-    /**
-     * @param ps
-     * @param j
-     * @param obj
-     */
     public static void setParam(PreparedStatement ps, Object obj, int j) throws SQLException {
-        // TODO - Complete this function
         if (obj == null) {
             ps.setString(j, null);
         } else if (obj instanceof String) {
@@ -67,30 +61,43 @@ public class FunctionalCommon {
      * @param sql
      * @param params
      */
-    private void processParams(String sql, List params) {
+    private void processParams(String sql, List<Object> params) {
         // TODO - Complete this function
     }
 
+    /**
+     * Use to close the connection
+     * @param connection
+     */
     public static void closeConnection(Connection connection) {
         try {
             if (connection != null) {
                 connection.close();
             }
-        } catch (SQLException sqlException) {
-            throw new ConnectionException(FAILED_TO_CLOSE_CONNECTION, sqlException.getCause());
+        } catch (SQLException e) {
+            throw new ConnectionException(FAILED_TO_CLOSE_CONNECTION, e.getCause());
         }
     }
 
+    /**
+     * Use to Close the statement
+     * @param stmt
+     */
     public static void closeStatement(Statement stmt) {
         try {
             if (stmt != null) {
                 stmt.close();
             }
-        } catch (SQLException sqlException) {
-            throw new StatementException(FAILED_TO_CLOSE_STATEMENT, sqlException.getCause());
+        } catch (SQLException e) {
+            throw new StatementException(FAILED_TO_CLOSE_STATEMENT, e.getCause());
         }
     }
 
+    /**
+     * Use to connection database
+     * @return Connection
+     * @throws SQLException
+     */
     public static Connection getConnection() throws SQLException {
         Properties properties = new Properties();
         properties.setProperty("user", EnvironmentConfiguration.properties().getProperty("jdbc.user"));
@@ -99,10 +106,16 @@ public class FunctionalCommon {
         try {
             return DriverManager.getConnection(EnvironmentConfiguration.properties().getProperty("jdbc.url"), properties);
         } catch (SQLException sqlException) {
-            throw new ConnectionException(FAILED_TO_GET_CONNECTION, sqlException.getCause());
+            throw new ConnectionException(String.format(FAILED_TO_GET_CONNECTION, EnvironmentConfiguration.properties().getProperty("jdbc.user")), sqlException.getCause());
         }
     }
 
+    /**
+     * Use to get multiple rows
+     * @param rs
+     * @param values
+     * @throws SQLException
+     */
     public static void getMultipleRows(ResultSet rs, List<List<Value>> values) throws SQLException {
         ResultSetMetaData metaData;
         int columnCount;
