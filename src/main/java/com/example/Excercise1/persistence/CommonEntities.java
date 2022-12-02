@@ -1,9 +1,9 @@
 package com.example.Excercise1.persistence;
 
+import com.example.Excercise1.enviroments.EnvironmentConfiguration;
 import com.example.Excercise1.exceptions.GetParamsException;
 import com.example.Excercise1.exceptions.ProcessClearException;
 import com.example.Excercise1.exceptions.ProcessParseSqlException;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -14,14 +14,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-
-import static com.example.Excercise1.persistence.Database.*;
+import static com.example.Excercise1.persistence.ProcessDatabase.*;
 import static com.example.Excercise1.constants.ResultCode.*;
 
 public class CommonEntities {
-    public static final String RESULT_CODE = "resultCode";
-    public static final String RESULT_CODE_MESSAGE = "resultCodeMessage";
-    public static final String IS_DIRTY = "isDirty";
+
+    public static final String RESULT_CODE_VARIABLE = "resultCode";
+    public static final String RESULT_CODE_MESSAGE_VARIABLE = "resultCodeMessage";
+    public static final String IS_DIRTY_VARIABLE = "isDirty";
     public static final String LOG = "log";
 
     /**
@@ -35,7 +35,7 @@ public class CommonEntities {
      */
     public static String getExecuteSql(int resultCode) {
         String sqlQuery = null;
-
+        // TODO: this para is wrong
         switch (resultCode) {
             case INSERT_CODE: {
                 sqlQuery = CUSTOMER_INSERT_SQL;
@@ -70,9 +70,9 @@ public class CommonEntities {
                         .toString()
                         .split("\\.");
                 nameOfInstanceVariable = listNameOfInstanceVariable[listNameOfInstanceVariable.length - 1];
-                if (Objects.equals(nameOfInstanceVariable, RESULT_CODE) ||
-                        Objects.equals(nameOfInstanceVariable, RESULT_CODE_MESSAGE) ||
-                        Objects.equals(nameOfInstanceVariable, IS_DIRTY) ||
+                if (Objects.equals(nameOfInstanceVariable, RESULT_CODE_VARIABLE) ||
+                        Objects.equals(nameOfInstanceVariable, RESULT_CODE_MESSAGE_VARIABLE) ||
+                        Objects.equals(nameOfInstanceVariable, IS_DIRTY_VARIABLE) ||
                         Objects.equals(nameOfInstanceVariable, LOG)) {
                 } else {
                     method = cls.getMethod("get" + nameOfInstanceVariable.substring(0, 1).toUpperCase() + nameOfInstanceVariable.substring(1));
@@ -103,9 +103,9 @@ public class CommonEntities {
                         .toString()
                         .split("\\.");
                 nameOfInstanceVariable = listNameOfInstanceVariable[listNameOfInstanceVariable.length - 1];
-                if (Objects.equals(nameOfInstanceVariable, RESULT_CODE) ||
-                        Objects.equals(nameOfInstanceVariable, RESULT_CODE_MESSAGE) ||
-                        Objects.equals(nameOfInstanceVariable, IS_DIRTY) ||
+                if (Objects.equals(nameOfInstanceVariable, RESULT_CODE_VARIABLE) ||
+                        Objects.equals(nameOfInstanceVariable, RESULT_CODE_MESSAGE_VARIABLE) ||
+                        Objects.equals(nameOfInstanceVariable, IS_DIRTY_VARIABLE) ||
                         Objects.equals(nameOfInstanceVariable, LOG)) {
                 } else {
                         method = cls.getMethod("set" + nameOfInstanceVariable.substring(0, 1).toUpperCase() + nameOfInstanceVariable.substring(1), type);
@@ -154,9 +154,9 @@ public class CommonEntities {
                         .toString()
                         .split("\\.");
                 nameOfInstanceVariable = listNameOfInstanceVariable[listNameOfInstanceVariable.length - 1];
-                if (Objects.equals(nameOfInstanceVariable, RESULT_CODE) ||
-                        Objects.equals(nameOfInstanceVariable, RESULT_CODE_MESSAGE) ||
-                        Objects.equals(nameOfInstanceVariable, IS_DIRTY) ||
+                if (Objects.equals(nameOfInstanceVariable, RESULT_CODE_VARIABLE) ||
+                        Objects.equals(nameOfInstanceVariable, RESULT_CODE_MESSAGE_VARIABLE) ||
+                        Objects.equals(nameOfInstanceVariable, IS_DIRTY_VARIABLE) ||
                         Objects.equals(nameOfInstanceVariable, LOG)) {
                 } else {
                         method = cls.getMethod("set" + nameOfInstanceVariable.substring(0, 1).toUpperCase() + nameOfInstanceVariable.substring(1), type);
