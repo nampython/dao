@@ -1,12 +1,16 @@
 package com.example.Excercise1.repository;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import java.sql.*;
 import java.util.List;
 
-import static com.example.Excercise1.repository.FunctionalCommon.getConnection;
-import static com.example.Excercise1.repository.FunctionalCommon.setSearchParams;
 
+@Repository
 public class JdbcConceptImpl implements JdbcConcept {
+
+    @Autowired
+    private RepositoryFunc repositoryFunc;
+
     @Override
     public int getAutoIncrementValue(String sql) {
         ResultSet rs = null;
@@ -14,7 +18,7 @@ public class JdbcConceptImpl implements JdbcConcept {
         Statement statement = null;
         try {
             int autoIncKeyFromApi = -1;
-            conn = getConnection();
+            conn = repositoryFunc.getConnection();
             statement = conn.createStatement();
             statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
             rs = statement.getGeneratedKeys();
@@ -33,7 +37,7 @@ public class JdbcConceptImpl implements JdbcConcept {
         ResultSet rs = null;
         String sql = "select * from productlines";
         try {
-            cnn = getConnection();
+            cnn = repositoryFunc.getConnection();
             statement = cnn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             rs = statement.executeQuery(sql);
             while (rs.next()) {
@@ -53,7 +57,7 @@ public class JdbcConceptImpl implements JdbcConcept {
         Statement statement = null;
         ResultSet rs = null;
         try {
-            cnn = getConnection();
+            cnn = repositoryFunc.getConnection();
             cnn.setAutoCommit(false);
             statement = cnn.createStatement();
             for (Object s : sql) {
@@ -75,11 +79,11 @@ public class JdbcConceptImpl implements JdbcConcept {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            cnn = getConnection();
+            cnn = repositoryFunc.getConnection();
             cnn.setAutoCommit(false);
             ps = cnn.prepareStatement(sql);
             for (List<Object> param : params) {
-                setSearchParams(ps, param);
+                repositoryFunc.setSearchParams(ps, param);
                 ps.addBatch();
             }
             int[] updateCount = ps.executeBatch();
@@ -96,7 +100,7 @@ public class JdbcConceptImpl implements JdbcConcept {
         Statement st = null;
         ResultSet rs = null;
         try {
-            cnn = getConnection();
+            cnn = repositoryFunc.getConnection();
             st = cnn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             rs = st.executeQuery(sql);
             rs.moveToInsertRow();

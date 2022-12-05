@@ -1,6 +1,5 @@
 package com.example.Excercise1.persistence;
 
-import com.example.Excercise1.enviroments.EnvironmentConfiguration;
 import com.example.Excercise1.exceptions.GetParamsException;
 import com.example.Excercise1.exceptions.ProcessClearException;
 import com.example.Excercise1.exceptions.ProcessParseSqlException;

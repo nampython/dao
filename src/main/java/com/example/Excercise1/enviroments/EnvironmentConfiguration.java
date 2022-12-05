@@ -1,11 +1,11 @@
 package com.example.Excercise1.enviroments;
 
-import org.springframework.core.env.AbstractEnvironment;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.util.Properties;
 import org.springframework.util.ResourceUtils;
+
+
 public class EnvironmentConfiguration  {
     public static Properties properties() {
         Properties properties = new Properties();

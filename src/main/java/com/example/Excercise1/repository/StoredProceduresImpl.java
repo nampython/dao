@@ -5,17 +5,24 @@ import com.example.Excercise1.valueObject.Value;
 import com.example.Excercise1.valueObject.ValueObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import static com.example.Excercise1.constants.MessageException.*;
-import static com.example.Excercise1.repository.FunctionalCommon.*;
-import static com.example.Excercise1.repository.FunctionalCommon.getMultipleRows;
 
+
+@Repository
 public class StoredProceduresImpl implements StoredProcedures {
     private static final Logger log = LogManager.getLogger(StoredProceduresImpl.class);
+    private final RepositoryFunc repositoryFunc;
+    @Autowired
+    public StoredProceduresImpl(RepositoryFunc repositoryFunc) {
+        this.repositoryFunc = repositoryFunc;
+    }
 
     /**
      * Use to execute single stored procedures
@@ -31,17 +38,17 @@ public class StoredProceduresImpl implements StoredProcedures {
 
         try {
             log.info("message=Calling Stored Procedure= " + storedProcedureName);
-            connection = getConnection();
+            connection = repositoryFunc.getConnection();
             callableStatement = connection.prepareCall(storedProcedureName);
             callableStatement.execute();
             rs = callableStatement.getResultSet();
-            getMultipleRows(rs, values);
+            repositoryFunc.getMultipleRows(rs, values);
             return values;
         } catch (SQLException e) {
             throw new ProcedureException(String.format(FAILED_TO_LOAD_VALUE_OBJECTS_BY_STORED_PRODUCER, storedProcedureName));
         } finally {
-            closeStatement(callableStatement);
-            closeConnection(connection);
+            repositoryFunc.closeStatement(callableStatement);
+            repositoryFunc.closeConnection(connection);
         }
     }
 
@@ -61,18 +68,18 @@ public class StoredProceduresImpl implements StoredProcedures {
 
         try {
             log.debug("message=Calling Stored Procedure= " + storedProcedureName + " ,Argument= " + params);
-            connection = getConnection();
+            connection = repositoryFunc.getConnection();
             callableStatement = connection.prepareCall(procSql);
-            setSearchParams(callableStatement, params);
+            repositoryFunc.setSearchParams(callableStatement, params);
             callableStatement.execute();
             rs = callableStatement.getResultSet();
-            getMultipleRows(rs, values);
+            repositoryFunc.getMultipleRows(rs, values);
             return values;
         } catch (SQLException e) {
             throw new ProcedureException(String.format(FAILED_TO_LOAD_VALUE_OBJECTS_BY_STORED_PRODUCER_WITH_INPUT_PARAMS, storedProcedureName, params));
         } finally {
-            closeStatement(callableStatement);
-            closeConnection(connection);
+            repositoryFunc.closeStatement(callableStatement);
+            repositoryFunc.closeConnection(connection);
         }
     }
 
@@ -92,7 +99,7 @@ public class StoredProceduresImpl implements StoredProcedures {
         String procSql = processSql(storedProcedureName, size);
         try {
             log.info("Calling Stored Procedure: " + storedProcedureName + " InputParams: " + inputParams + " OutParams: " + outputParams);
-            connection = getConnection();
+            connection = repositoryFunc.getConnection();
             callableStatement = connection.prepareCall(procSql);
             //Register output params
             for (Map.Entry<Integer, Integer> entry : outputParams.entrySet()) {
@@ -100,7 +107,7 @@ public class StoredProceduresImpl implements StoredProcedures {
             }
             //Set input params
             for (Map.Entry<Integer, Object> entry : inputParams.entrySet()) {
-                setParam(callableStatement, entry.getValue(), entry.getKey());
+                repositoryFunc.setParam(callableStatement, entry.getValue(), entry.getKey());
             }
             //Execute store procedure
             callableStatement.execute();
