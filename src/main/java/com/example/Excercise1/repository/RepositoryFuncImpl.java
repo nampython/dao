@@ -6,7 +6,10 @@ import com.example.Excercise1.exceptions.StatementException;
 import com.example.Excercise1.valueObject.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Component;
+
+import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
@@ -18,10 +21,11 @@ import static com.example.Excercise1.constants.MessageException.*;
 @Component
 public class RepositoryFuncImpl implements RepositoryFunc {
     private final Environment env;
-
+    private final DataSource dataSource;
     @Autowired
-    public RepositoryFuncImpl(Environment env) {
+    public RepositoryFuncImpl(Environment env, DataSource dataSource) {
         this.env = env;
+        this.dataSource = dataSource;
     }
 
     /** Use to set parameter of the object into PreparedStatement
@@ -32,7 +36,7 @@ public class RepositoryFuncImpl implements RepositoryFunc {
     public void setSearchParams(PreparedStatement ps, List<Object> params) {
         if (params == null) {
             throw new NullPointerException(INVALID_PARAMETER);
-        }
+        }   
         try {
             for (int i = 0, j = 1; i < params.size(); i++, j++) {
                 Object obj = params.get(i);
@@ -84,13 +88,33 @@ public class RepositoryFuncImpl implements RepositoryFunc {
      */
     @Override
     public void closeConnection(Connection connection) {
-        try {
-            if (connection != null) {
-                connection.close();
-            }
-        } catch (SQLException e) {
-            throw new ConnectionException(FAILED_TO_CLOSE_CONNECTION, e.getCause());
-        }
+//        try {
+//            if (connection != null) {
+//                connection.close();
+//            }
+//        } catch (SQLException e) {
+//            throw new ConnectionException(FAILED_TO_CLOSE_CONNECTION, e.getCause());
+//        }
+        DataSourceUtils.releaseConnection(connection, this.dataSource);
+    }
+
+    /**
+     * Use to connection database
+     * @return Connection
+     * @throws SQLException
+     */
+    @Override
+    public Connection getConnection() {
+        return DataSourceUtils.getConnection(this.dataSource);
+//        Properties properties = new Properties();
+//        properties.setProperty("user", env.getProperty("jdbc.user"));
+//        properties.setProperty("password", env.getProperty("jdbc.password"));
+//        properties.setProperty("useSSL", "false");
+//        try {
+//            return DriverManager.getConnection(Objects.requireNonNull(env.getProperty("jdbc.url")), properties);
+//        } catch (SQLException sqlException) {
+//            throw new ConnectionException(String.format(FAILED_TO_GET_CONNECTION, env.getProperty("jdbc.schema")), sqlException.getCause());
+//        }
     }
 
     /**
@@ -105,24 +129,6 @@ public class RepositoryFuncImpl implements RepositoryFunc {
             }
         } catch (SQLException e) {
             throw new StatementException(FAILED_TO_CLOSE_STATEMENT, e.getCause());
-        }
-    }
-
-    /**
-     * Use to connection database
-     * @return Connection
-     * @throws SQLException
-     */
-    @Override
-    public Connection getConnection() {
-        Properties properties = new Properties();
-        properties.setProperty("user", env.getProperty("jdbc.user"));
-        properties.setProperty("password", env.getProperty("jdbc.password"));
-        properties.setProperty("useSSL", "false");
-        try {
-            return DriverManager.getConnection(Objects.requireNonNull(env.getProperty("jdbc.url")), properties);
-        } catch (SQLException sqlException) {
-            throw new ConnectionException(String.format(FAILED_TO_GET_CONNECTION, env.getProperty("jdbc.schema")), sqlException.getCause());
         }
     }
 

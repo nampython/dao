@@ -2,7 +2,6 @@ package com.example.Excercise1.utils;
 
 import org.springframework.stereotype.Component;
 
-@Component
 public interface StringUtils {
     public static final String EMPTY = "";
     public static final int INDEX_NOT_FOUND = -1;
