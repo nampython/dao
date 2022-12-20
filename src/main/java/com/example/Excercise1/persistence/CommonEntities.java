@@ -24,33 +24,6 @@ public class CommonEntities {
     public static final String IS_DIRTY_VARIABLE = "isDirty";
     public static final String LOG = "log";
 
-    /**
-     * Use to identify the sql query of the entity based on the result-code
-     * INSERT_CODE = 1
-     * UPDATE_CODE = 101
-     * DELETE_CODE = 103
-     *
-     * @param resultCode result-code
-     * @return sql query based on result code
-     */
-    public static String getExecuteSql(int resultCode) {
-        String sqlQuery = null;
-        // TODO: this para is wrong
-        switch (resultCode) {
-            case INSERT_CODE: {
-                sqlQuery = CUSTOMER_INSERT_SQL;
-            }
-            case UPDATE_CODE: {
-                sqlQuery = CUSTOMER_UPDATE_SQL;
-
-            }
-            case DELETE_CODE: {
-                sqlQuery = CUSTOMER_DELETE_SQL;
-            }
-        }
-        return sqlQuery;
-    }
-
     public static boolean checkInstanceVariable(String instanceVariable) {
         final boolean isResultCode = Objects.equals(instanceVariable, RESULT_CODE_VARIABLE);
         final boolean isResultCodeMessage = Objects.equals(instanceVariable, RESULT_CODE_MESSAGE_VARIABLE);

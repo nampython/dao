@@ -1,60 +1,69 @@
 package com.example.Excercise1.persistence;
 
+import com.example.Excercise1.exceptions.ConnectionException;
+import com.example.Excercise1.exceptions.GeneratedSqlQueryException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+
+import java.sql.*;
+import java.util.*;
+
+import static com.example.Excercise1.constants.MessageException.FAILED_TO_GET_CONNECTION;
 
 @Component
 public class ProcessDatabase {
     private static final Logger log = LogManager.getLogger(ProcessDatabase.class);
-    // CUSTOMER TABLE
-    public static final String CUSTOMER_UPDATE_SQL = "update customersGetTableName set customerName = ?, contactLastName = ?, contactFirsGetTableNametName = ?, phone = ?, addressLine1 = ?, addressLine2 = ?, city = ?, state = ?, postalCode = ?, country = ?, salesRepEmployeeNumber = ?, creditLimit = ? where customerNumber = ?";
-    public static final String CUSTOMER_INSERT_SQL = "insert into customersGetTableName(customerNumber, customerName, contactLastName, contactFirsGetTableNametName, phone, addressLine1, addressLine2, city, state, postalCode, country, salesRepEmployeeNumber, creditLimit) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    public static final String CUSTOMER_DELETE_SQL = "delete from customersGetTableName where customerNumber = ?";
-    public static final String CUSTOMER_SELECT_SQL = "select * from customersGetTableName";
 
     /**
      * Use to generate sql queries for entities
      * @return Map<String, List<String>>
      */
     public static Map<String, List<String>> generatedSqlQuery() {
-//        Connection cn = null;
-//        PreparedStatement st = null;
-//        ResultSet rsGetTableName = null;
-//        ResultSet rsGetColumnName = null;
-//        DatabaseMetaData meta = null;
-//        Map<String, List<String>> totalQuery = new HashMap<>();
-//        String sql = EnvironmentConfiguration.properties().getProperty("sql.select.tables");
-//
-//        try {
-//            cn = getConnection();
-//            meta = cn.getMetaData();
-//            rsGetTableName = meta.getTables(cn.getCatalog(), null, "%", new String [] {"TABLE"});
-//            while (rsGetTableName.next()) {
-//                String nameTable = rsGetTableName.getString(3);
-//                log.info("message=Executing auto-generated sql with table: " + nameTable);
-//                List<String> listOfColumName = new ArrayList<>();
-//                st = cn.prepareStatement(sql);
-//                st.setString(1, EnvironmentConfiguration.properties().getProperty("jdbc.schema"));
-//                st.setString(2, nameTable);
-//                rsGetColumnName = st.executeQuery();
-//                while (rsGetColumnName.next()) {
-//                    String columnName = rsGetColumnName.getString(4);
-//                    listOfColumName.add(columnName);
-//                }
-//                List<String> generatedQueries = processTable(nameTable, listOfColumName);
-//                totalQuery.put(nameTable, generatedQueries);
-//            }
-//            return totalQuery;
-//        } catch (SQLException e) {
-//            throw new GeneratedSqlQueryException("Failed to generate sql query");
-//        }
-        return null;
+        Connection cn = null;
+        PreparedStatement st = null;
+        ResultSet rsGetTableName = null;
+        ResultSet rsGetColumnName = null;
+        DatabaseMetaData meta = null;
+        Map<String, List<String>> totalQuery = new HashMap<>();
+        String sql = "select * from information_schema.COLUMNS where TABLE_SCHEMA = ? and TABLE_NAME = ? order by  ordinal_position";
+
+        try {
+            cn = getConnection();
+            meta = cn.getMetaData();
+            rsGetTableName = meta.getTables(cn.getCatalog(), null, "%", new String [] {"TABLE"});
+            while (rsGetTableName.next()) {
+                String nameTable = rsGetTableName.getString(3);
+                log.info("message=Executing auto-generated sql with table: " + nameTable);
+                List<String> listOfColumName = new ArrayList<>();
+                st = cn.prepareStatement(sql);
+                st.setString(1, "classicmodels");
+                st.setString(2, nameTable);
+                rsGetColumnName = st.executeQuery();
+                while (rsGetColumnName.next()) {
+                    String columnName = rsGetColumnName.getString(4);
+                    listOfColumName.add(columnName);
+                }
+                List<String> generatedQueries = processTable(nameTable, listOfColumName);
+                totalQuery.put(nameTable, generatedQueries);
+            }
+            return totalQuery;
+        } catch (SQLException e) {
+            throw new GeneratedSqlQueryException("Failed to generate sql query");
+        }
     }
 
+    private static Connection getConnection() {
+        Properties properties = new Properties();
+        properties.setProperty("user", "root");
+        properties.setProperty("password", "admin");
+        properties.setProperty("useSSL", "false");
+        try {
+            return DriverManager.getConnection("jdbc:mysql://localhost:3306/classicmodels", properties);
+        } catch (SQLException sqlException) {
+            throw new ConnectionException(String.format(FAILED_TO_GET_CONNECTION, "classicmodels"), sqlException.getCause());
+        }
+    }
     /**
      * Use to process table to get the list of sql query based on table name
      * @param nameTable name of the  table

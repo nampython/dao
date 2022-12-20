@@ -9,6 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import static com.example.Excercise1.constants.ResultCode.*;
+
 @Getter
 @Setter
 @ToString
@@ -55,9 +57,31 @@ public class Offices implements ValueObject {
 
     }
 
+    /**
+     * Use to identify the sql query of the entity based on the result-code
+     * INSERT_CODE = 101
+     * UPDATE_CODE = 0
+     * DELETE_CODE = 103
+     *
+     * @return sql query based on result code
+     */
     @Override
     public String getExecuteSql() {
-        return CommonEntities.getExecuteSql(this.getResultCode());
+        String sqlQuery = null;
+
+        switch (this.resultCode) {
+            case INSERT_CODE: {
+                sqlQuery = ProcessDatabase.generatedSqlQuery().get("offices").get(3);
+            }
+            case UPDATE_CODE: {
+                sqlQuery = ProcessDatabase.generatedSqlQuery().get("offices").get(2);
+
+            }
+            case DELETE_CODE: {
+                sqlQuery = ProcessDatabase.generatedSqlQuery().get("offices").get(1);
+            }
+        }
+        return sqlQuery;
     }
 
     @Override
