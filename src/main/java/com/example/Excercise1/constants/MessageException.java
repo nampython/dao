@@ -10,6 +10,7 @@ public class MessageException {
     public static final String INVALID_PARAMETER = "Invalid parameters: params is NULL";
     public static final String FAILED_TO_SET_PARAMETER = "Failed to set parameter for PreparedStatement with params: %s";
     public static final String FAILED_TO_SAVE_VALUE_OBJECT = "Failed to save data into the database with Value Object: %s";
+    public static final String FAILED_TO_EXECUTE = "Failure to  executeSQL with sql: %s and params: %s";
     public static final String FAILED_TO_LOAD_VALUE_OBJECTS_BY_STORED_PRODUCER = "Failed to execute stored procedures: %s";
     public static final String FAILED_TO_LOAD_VALUE_OBJECTS_BY_STORED_PRODUCER_WITH_INPUT_PARAMS = "Failed to execute stored procedures: " + "%s" + " with  params: " + "%s";
     public static final String FAILED_TO_LOAD_VALUE_OBJECT_BY_PRODUCER_INPUT_AND_OUTPUT_PARAMS = "Failed to execute stored procedures " + "%s" + " InputParams: " + "%s" + " OutParams: " + "%s";
