@@ -115,4 +115,8 @@ public class ProductsEntity implements ValueObject {
     public boolean isModified() {
         return this.isDirty;
     }
+    @Override
+    public  int getResultCode() {
+        return this.resultCode;
+    }
 }

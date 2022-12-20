@@ -15,4 +15,5 @@ public interface ValueObject extends Cloneable{
     String getUpdateSql();
     String getSelectSql();
     boolean isModified();
+    int getResultCode();
 }

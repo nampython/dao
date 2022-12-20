@@ -122,4 +122,9 @@ public class Customers implements ValueObject {
     public boolean isModified() {
         return this.isDirty;
     }
+
+    @Override
+    public  int getResultCode() {
+        return this.resultCode;
+    }
 }
