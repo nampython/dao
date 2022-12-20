@@ -37,7 +37,7 @@ public class CommonEntities {
      * @param o object of the class
      * @return List of objects
      */
-    public static List<Object> getParams(Object o) {
+    public static List<Object> getParams(Object o, int resultCode) {
         Class<?> cls = o.getClass();
         Method method = null;
         String[] listOfInstanceVariable = null;
@@ -54,8 +54,16 @@ public class CommonEntities {
                 if (checkInstanceVariable(instanceVariable)) {
 
                 } else {
-                    method = cls.getMethod("get" + instanceVariable.substring(0, 1).toUpperCase() + instanceVariable.substring(1));
-                    params.add(method.invoke(o));
+                    String getValue = "get" + instanceVariable.substring(0, 1).toUpperCase() + instanceVariable.substring(1);
+                    if (resultCode == DELETE_CODE) {
+                        method = cls.getMethod(getValue);
+                        params.add(method.invoke(o));
+                        return params;
+                    } else {
+                        method = cls.getMethod(getValue);
+                        params.add(method.invoke(o));
+                    }
+
                 }
             }
             return params;
