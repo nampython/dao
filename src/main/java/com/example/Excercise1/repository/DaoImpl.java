@@ -2,6 +2,7 @@ package com.example.Excercise1.repository;
 
 import com.example.Excercise1.exceptions.GetDataException;
 import com.example.Excercise1.exceptions.SetDataException;
+import com.example.Excercise1.utils.ErrorCodeMap;
 import com.example.Excercise1.valueObject.Value;
 import com.example.Excercise1.valueObject.ValueObject;
 import org.apache.logging.log4j.LogManager;
@@ -9,10 +10,12 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Repository;
+
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
 import static com.example.Excercise1.constants.MessageException.*;
 
 @Repository
@@ -21,6 +24,7 @@ public class DaoImpl implements Dao {
     private static final Logger log = LogManager.getLogger(DaoImpl.class);
     private final Environment env;
     private final RepositoryFunc repositoryFunc;
+
     @Autowired
     public DaoImpl(Environment env, RepositoryFunc repositoryFunc) {
         this.env = env;
@@ -33,8 +37,8 @@ public class DaoImpl implements Dao {
      * @param sql:             sql query
      * @param valueObjectClass The class of the value object.
      * @param <T>:
-     * @throws GetDataException if the record was not found
      * @return a ValueObject that can be downcasted to valueObjectClass
+     * @throws GetDataException if the record was not found
      */
     @Override
     public <T extends ValueObject> List<T> getListOfValueObject(String sql, Class<T> valueObjectClass) throws GetDataException {
@@ -61,6 +65,28 @@ public class DaoImpl implements Dao {
             repositoryFunc.closeConnection(connection);
         }
         return valueObjects;
+    }
+
+    @Override
+    public <T extends ValueObject> T getSingleValueObject(String sql, Class<T> valueObjectClass) {
+        Connection cn = null;
+        Statement st = null;
+        ResultSet rs = null;
+        T valueObject = null;
+        try {
+            log.info("message=Executing sql: " + sql + " with " + "valueObject: " + valueObjectClass.getSimpleName());
+            cn = repositoryFunc.getConnection();
+            st = cn.createStatement();
+            rs = st.executeQuery(sql);
+            if (rs.next()) {
+                valueObject = valueObjectClass.getConstructor().newInstance();
+                valueObject.parseSql(rs);
+            }
+            return valueObject;
+        } catch (SQLException | InvocationTargetException | InstantiationException | IllegalAccessException |
+                 NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -137,9 +163,10 @@ public class DaoImpl implements Dao {
 
     /**
      * Use to get multiple rows
-     * @param sql sql query
-     * @return Multiple Row
+     *
+     * @param sql  sql query
      * @param <T>:
+     * @return Multiple Row
      */
     @Override
     public <T extends ValueObject> List<List<Value>> getMultipleRowsWithStatement(String sql) {
@@ -167,9 +194,10 @@ public class DaoImpl implements Dao {
 
     /**
      * Use to get single row data
-     * @param sql sql query
-     * @return single row
+     *
+     * @param sql  sql query
      * @param <T>:
+     * @return single row
      */
     @Override
     public <T extends ValueObject> List<Value> getSingleRow(String sql) {
@@ -202,6 +230,7 @@ public class DaoImpl implements Dao {
 
     /**
      * Use to set list of value object
+     *
      * @param valueObjects List of valueObjectClass The class of the value object.
      * @throws SQLException
      */
@@ -236,20 +265,33 @@ public class DaoImpl implements Dao {
      */
     @Override
     public void setValueObject(ValueObject valueObject) throws SQLException {
-        List<Object> params = valueObject.getParams();
-        String sql = valueObject.getExecuteSql();
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        try {
-            connection = repositoryFunc.getConnection();
-            preparedStatement = connection.prepareStatement(sql);
-            repositoryFunc.setSearchParams(preparedStatement, params);
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new SetDataException(String.format(FAILED_TO_SAVE_VALUE_OBJECT, valueObject), e.getCause());
-        } finally {
-            repositoryFunc.closeStatement(preparedStatement);
-            repositoryFunc.closeConnection(connection);
+        boolean isUpdated = valueObject.getResultCode() != ErrorCodeMap.DELETED_NEW_RECORD && valueObject.isModified();
+        boolean isNewValueObject = valueObject.getResultCode() == ErrorCodeMap.NEW_RECORD;
+        boolean isDeletedValueObject = valueObject.getResultCode() == ErrorCodeMap.DELETED_RECORD;
+
+        if (isUpdated || isNewValueObject || isDeletedValueObject) {
+            Connection connection = null;
+            try {
+                connection = repositoryFunc.getConnection();
+                this.executeSql(connection, valueObject.getExecuteSql(), valueObject.getParams());
+            } finally {
+                repositoryFunc.closeConnection(connection);
+            }
         }
+    }
+
+    public int executeSql(Connection cn, String sql, List<Object> params) {
+        PreparedStatement ps = null;
+        int rowsAffected = 0;
+        try {
+            ps = cn.prepareStatement(sql);
+            repositoryFunc.setSearchParams(ps, params);
+            rowsAffected = ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new SetDataException(String.format(FAILED_TO_EXECUTE, sql , params), e.getCause());
+        } finally {
+            repositoryFunc.closeStatement(ps);
+        }
+        return rowsAffected;
     }
 }
