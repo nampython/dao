@@ -96,7 +96,7 @@ public class Customers implements ValueObject {
     }
     @Override
     public List<Object> getParams() {
-        return CommonEntities.getParams(this);
+        return CommonEntities.getParams(this, this.resultCode);
     }
 
     @Override

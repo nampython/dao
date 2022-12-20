@@ -91,8 +91,8 @@ public class ProductsEntity implements ValueObject {
     }
 
     @Override
-    public List getParams() {
-        return CommonEntities.getParams(this);
+    public List<Object> getParams() {
+        return CommonEntities.getParams(this, this.resultCode);
     }
 
     @Override
