@@ -56,8 +56,8 @@ public class ProductsEntity implements ValueObject {
     }
 
     @Override
-    public void setResultCode(int var1) {
-
+    public void setResultCode(int rc) {
+        this.resultCode = rc;
     }
 
     /**
@@ -75,13 +75,16 @@ public class ProductsEntity implements ValueObject {
         switch (this.resultCode) {
             case INSERT_CODE: {
                 sqlQuery = ProcessDatabase.generatedSqlQuery().get("productlines").get(3);
+                break;
             }
             case UPDATE_CODE: {
                 sqlQuery = ProcessDatabase.generatedSqlQuery().get("productlines").get(2);
+                break;
 
             }
             case DELETE_CODE: {
                 sqlQuery = ProcessDatabase.generatedSqlQuery().get("productlines").get(1);
+                break;
             }
         }
         return sqlQuery;

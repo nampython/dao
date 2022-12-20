@@ -23,11 +23,8 @@ public class Orderdetails implements ValueObject {
     private int quantityOrdered;
     private BigDecimal priceEach;
     private short orderLineNumber;
-
     private int resultCode = 101;
-
     private String resultCodeMessage = null;
-
     public boolean isDirty;
 
     public Orderdetails(int orderNumber, String productCode, int quantityOrdered, BigDecimal priceEach, short orderLineNumber) {
@@ -49,6 +46,10 @@ public class Orderdetails implements ValueObject {
         CommonEntities.processesParseSql(this, rs);
     }
 
+    @Override
+    public void setResultCode(int rc) {
+        this.resultCode = rc;
+    }
     /**
      * Use to identify the sql query of the entity based on the result-code
      * INSERT_CODE = 101
@@ -64,13 +65,15 @@ public class Orderdetails implements ValueObject {
         switch (this.resultCode) {
             case INSERT_CODE: {
                 sqlQuery = ProcessDatabase.generatedSqlQuery().get("orderdetails").get(3);
+                break;
             }
             case UPDATE_CODE: {
                 sqlQuery = ProcessDatabase.generatedSqlQuery().get("orderdetails").get(2);
-
+                break;
             }
             case DELETE_CODE: {
                 sqlQuery = ProcessDatabase.generatedSqlQuery().get("orderdetails").get(1);
+                break;
             }
         }
         return sqlQuery;
