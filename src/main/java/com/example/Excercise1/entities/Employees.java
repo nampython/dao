@@ -108,4 +108,8 @@ public class Employees implements ValueObject {
     public String getInsertSql() {
         return ProcessDatabase.generatedSqlQuery().get("employees").get(3);
     }
+    @Override
+    public boolean isModified() {
+        return this.isDirty;
+    }
 }

@@ -110,4 +110,8 @@ public class Orders implements ValueObject {
         return ProcessDatabase.generatedSqlQuery().get("orders").get(4);
     }
 
+    @Override
+    public boolean isModified() {
+        return this.isDirty;
+    }
 }

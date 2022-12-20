@@ -117,4 +117,9 @@ public class Customers implements ValueObject {
     public String getInsertSql() {
         return ProcessDatabase.generatedSqlQuery().get("customers").get(3);
     }
+
+    @Override
+    public boolean isModified() {
+        return this.isDirty;
+    }
 }

@@ -101,4 +101,8 @@ public class Productlines implements ValueObject {
     public String getInsertSql() {
         return ProcessDatabase.generatedSqlQuery().get("productlines").get(4);
     }
+    @Override
+    public boolean isModified() {
+        return this.isDirty;
+    }
 }

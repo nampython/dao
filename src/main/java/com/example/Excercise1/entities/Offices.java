@@ -108,4 +108,8 @@ public class Offices implements ValueObject {
     public String getInsertSql() {
         return ProcessDatabase.generatedSqlQuery().get("offices").get(3);
     }
+    @Override
+    public boolean isModified() {
+        return this.isDirty;
+    }
 }

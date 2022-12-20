@@ -100,4 +100,8 @@ public class Orderdetails implements ValueObject {
     public String getInsertSql() {
         return ProcessDatabase.generatedSqlQuery().get("orderdetails").get(4);
     }
+    @Override
+    public boolean isModified() {
+        return this.isDirty;
+    }
 }

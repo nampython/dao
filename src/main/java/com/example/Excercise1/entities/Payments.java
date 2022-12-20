@@ -102,4 +102,9 @@ public class Payments implements ValueObject {
     public String getInsertSql() {
         return ProcessDatabase.generatedSqlQuery().get("payments").get(4);
     }
+
+    @Override
+    public boolean isModified() {
+        return this.isDirty;
+    }
 }

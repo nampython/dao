@@ -111,4 +111,8 @@ public class ProductsEntity implements ValueObject {
     public String getInsertSql() {
         return ProcessDatabase.generatedSqlQuery().get("products").get(4);
     }
+    @Override
+    public boolean isModified() {
+        return this.isDirty;
+    }
 }
