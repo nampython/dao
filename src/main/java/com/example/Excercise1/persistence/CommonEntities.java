@@ -15,7 +15,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import static com.example.Excercise1.persistence.ProcessDatabase.*;
 import static com.example.Excercise1.constants.ResultCode.*;
 
 public class CommonEntities {
@@ -65,6 +64,16 @@ public class CommonEntities {
                     }
 
                 }
+            }
+//            [1,2, 3, 23, 2, 2,1]
+            // change position ele when using sql query
+            if (resultCode == UPDATE_CODE) {
+                List<Object>  newParams = new ArrayList<>();
+                for (int i = 1; i < params.size(); i++) {
+                    newParams.add(params.get(i));
+                }
+                newParams.add(params.get(0));
+                return newParams;
             }
             return params;
         } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
