@@ -265,7 +265,7 @@ public class DaoImpl implements Dao {
      */
     @Override
     public void setValueObject(ValueObject valueObject) throws SQLException {
-        boolean isUpdated = valueObject.getResultCode() != ErrorCodeMap.DELETED_NEW_RECORD && valueObject.isModified();
+        boolean isUpdated = valueObject.getResultCode() == ErrorCodeMap.RECORD_FOUND && valueObject.isModified();
         boolean isNewValueObject = valueObject.getResultCode() == ErrorCodeMap.NEW_RECORD;
         boolean isDeletedValueObject = valueObject.getResultCode() == ErrorCodeMap.DELETED_RECORD;
 
