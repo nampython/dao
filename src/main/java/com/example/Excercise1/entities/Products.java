@@ -17,14 +17,14 @@ import static com.example.Excercise1.constants.ResultCode.*;
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor
-public class ProductsEntity implements ValueObject {
+public class Products implements ValueObject {
     private String productCode;
     private String productName;
     private String productLine;
     private String productScale;
     private String productVendor;
     private String productDescription;
-    private short quantityInStock;
+    private Short quantityInStock;
     private BigDecimal buyPrice;
     private BigDecimal msrp;
 
@@ -32,7 +32,7 @@ public class ProductsEntity implements ValueObject {
     private String resultCodeMessage = null;
     public boolean isDirty;
 
-    public ProductsEntity(String productCode, String productName, String productLine, String productScale, String productVendor, String productDescription, short quantityInStock, BigDecimal buyPrice, BigDecimal msrp) {
+    public Products(String productCode, String productName, String productLine, String productScale, String productVendor, String productDescription, short quantityInStock, BigDecimal buyPrice, BigDecimal msrp) {
         this.productCode = productCode;
         this.productName = productName;
         this.productLine = productLine;
