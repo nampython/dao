@@ -28,23 +28,24 @@ public class LogicEntityImpl implements LogicEntity {
         Iterator<T> elements = objects.iterator();
         try {
             while (elements.hasNext()) {
-                method1 = this.processMethodGetWithFieldName(cls1, (String) elements.next());
+                T ele = elements.next();
+                method1 = this.processMethodGetWithFieldName(cls1, ele);
                 value = method1.invoke(o1);
-                method2 = this.processMethodSetWithFieldName(cls2, (String) elements.next());
+                method2 = this.processMethodSetWithFieldName(cls2, ele);
                 method2.invoke(o2, value);
             }
-        }catch (NoSuchFieldException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+        } catch (NoSuchFieldException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
             throw new CannotSetValueException("Cannot set value from object " + o1.getClass().getSimpleName() + " into " + "object " + o2.getClass().getSimpleName());
         }
     }
 
-    private <T extends  String> Method processMethodGetWithFieldName(Class<?> cls, T fieldName) throws NoSuchMethodException {
-        String methodGet = PREFIX_GET_METHOD + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+    private <T> Method processMethodGetWithFieldName(Class<?> cls, T fieldName) throws NoSuchMethodException {
+        String methodGet = PREFIX_GET_METHOD + ((String) fieldName).substring(0, 1).toUpperCase() + ((String) fieldName).substring(1);
         return cls.getMethod(methodGet);
     }
 
-    private <T extends  String> Method processMethodSetWithFieldName(Class<?> cls, String fieldName) throws NoSuchFieldException, NoSuchMethodException {
-        String s = PREFIX_SET_METHOD + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+    private <T> Method processMethodSetWithFieldName(Class<?> cls, T fieldName) throws NoSuchFieldException, NoSuchMethodException {
+        String s = PREFIX_SET_METHOD + ((String)fieldName).substring(0, 1).toUpperCase() + ((String)fieldName).substring(1);
         Field field = cls.getDeclaredField((String) fieldName);
         Class<?> typeField = field.getType();
         return this.setParameterGetMethod(cls, typeField, s);

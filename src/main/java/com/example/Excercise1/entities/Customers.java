@@ -17,7 +17,7 @@ import static com.example.Excercise1.constants.ResultCode.*;
 @EqualsAndHashCode
 @NoArgsConstructor
 public class Customers implements ValueObject {
-    private int customerNumber;
+    private Integer customerNumber;
     private String customerName;
     private String contactLastName;
     private String contactFirstName;

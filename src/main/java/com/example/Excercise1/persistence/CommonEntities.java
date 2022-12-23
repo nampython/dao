@@ -65,7 +65,7 @@ public class CommonEntities {
 
                 }
             }
-//            [1,2, 3, 23, 2, 2,1]
+
             // change position ele when using sql query
             if (resultCode == UPDATE_CODE) {
                 List<Object>  newParams = new ArrayList<>();
