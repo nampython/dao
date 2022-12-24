@@ -17,8 +17,21 @@ import static com.example.Excercise1.constants.EntityConstants.PREFIX_SET_METHOD
 @Component
 public class LogicEntityImpl implements LogicEntity {
 
+    /**
+     * Auto set values from o1 to o2 object
+     * For example:
+     * o1.setOrder(o2.getOrder())
+     * o1.setProductLine(o2.getProductLine())
+     * we can easily handle it by calling this function:
+     * setValue(o1, o2, Arrays.asList("order", "productLine"))
+     * @param o1 Object you want to get values
+     * @param o2 Object you want to set values
+     * @param objects List parameters we want to set
+     * @param <T> Type of List of parameter
+     */
     @Override
     public <T> void setValue(Object o1, Object o2, List<T> objects) {
+        // TODO: process with many Objects
         Class<?> cls1 = o1.getClass();
         Class<?> cls2 = o2.getClass();
         Method method1 = null;
