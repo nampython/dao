@@ -1,5 +1,7 @@
 package com.example.Excercise1.repository;
 
+import com.example.Excercise1.database.ProcessConnection;
+import com.example.Excercise1.database.ProcessStatement;
 import com.example.Excercise1.exceptions.GetDataException;
 import com.example.Excercise1.exceptions.SetDataException;
 import com.example.Excercise1.utils.ErrorCodeMap;
@@ -18,17 +20,21 @@ import java.util.List;
 
 import static com.example.Excercise1.constants.MessageException.*;
 
+
 @Repository
 public class DaoImpl implements Dao {
 
     private static final Logger log = LogManager.getLogger(DaoImpl.class);
     private final Environment env;
     private final RepositoryFunc repositoryFunc;
-
+    private final ProcessConnection processConnection;
+    private final ProcessStatement processStatement;
     @Autowired
-    public DaoImpl(Environment env, RepositoryFunc repositoryFunc) {
+    public DaoImpl(Environment env, RepositoryFunc repositoryFunc, ProcessConnection processConnection, ProcessStatement processStatement) {
         this.env = env;
         this.repositoryFunc = repositoryFunc;
+        this.processConnection = processConnection;
+        this.processStatement = processStatement;
     }
 
     /**
@@ -46,38 +52,42 @@ public class DaoImpl implements Dao {
         Connection connection = null;
         Statement stmt = null;
         ResultSet rs = null;
+
         try {
             log.info("message=Executing sql: " + sql + " with " + "valueObject: " + valueObjectClass.getSimpleName());
-            connection = repositoryFunc.getConnection();
+            connection = processConnection.getConnection();
             stmt = connection.createStatement();
 //            stmt.setFetchSize(getFetchSize());
             rs = stmt.executeQuery(sql);
+
             while (rs.next()) {
                 T valueObject = valueObjectClass.getConstructor().newInstance();
                 valueObject.parseSql(rs);
                 valueObjects.add((T) valueObject);
             }
+            return valueObjects;
         } catch (SQLException | NoSuchMethodException | InstantiationException | IllegalAccessException |
                  InvocationTargetException e) {
             throw new GetDataException(String.format(FAILED_TO_GET_DATA, sql, valueObjects), e.getCause());
         } finally {
-            repositoryFunc.closeStatement(stmt);
-            repositoryFunc.closeConnection(connection);
+            processStatement.closeStatement(stmt);
+            processConnection.closeConnection(connection);
         }
-        return valueObjects;
     }
 
     @Override
     public <T extends ValueObject> T getSingleValueObject(String sql, Class<T> valueObjectClass) {
-        Connection cn = null;
-        Statement st = null;
+        Connection connection = null;
+        Statement stmt = null;
         ResultSet rs = null;
         T valueObject = null;
+
         try {
             log.info("message=Executing sql: " + sql + " with " + "valueObject: " + valueObjectClass.getSimpleName());
-            cn = repositoryFunc.getConnection();
-            st = cn.createStatement();
-            rs = st.executeQuery(sql);
+            connection = processConnection.getConnection();
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(sql);
+
             if (rs.next()) {
                 valueObject = valueObjectClass.getConstructor().newInstance();
                 valueObject.parseSql(rs);
@@ -85,7 +95,10 @@ public class DaoImpl implements Dao {
             return valueObject;
         } catch (SQLException | InvocationTargetException | InstantiationException | IllegalAccessException |
                  NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            throw new GetDataException(String.format(FAILED_TO_GET_DATA, sql, valueObjectClass.getSimpleName()), e.getCause());
+        } finally {
+            processStatement.closeStatement(stmt);
+            processConnection.closeConnection(connection);
         }
     }
 
@@ -104,26 +117,27 @@ public class DaoImpl implements Dao {
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
+
         try {
             log.info("message=Executing sql: " + sql + "with params: " + params.toString() + " and " + " valueObject: " + valueObjectClass.getSimpleName());
-            connection = repositoryFunc.getConnection();
+            connection = processConnection.getConnection();
             ps = connection.prepareStatement(sql);
             repositoryFunc.setSearchParams(ps, params);
             rs = ps.executeQuery();
+
             while (rs.next()) {
                 T valueObject = valueObjectClass.getConstructor().newInstance();
                 valueObject.parseSql(rs);
                 valueObjects.add((T) valueObject);
             }
+            return valueObjects;
         } catch (SQLException | InstantiationException | IllegalAccessException | NoSuchMethodException |
                  InvocationTargetException e) {
             throw new GetDataException(String.format(FAILED_TO_GET_DATA, sql, valueObjects), e.getCause());
         } finally {
-            repositoryFunc.closeStatement(ps);
-            repositoryFunc.closeConnection(connection);
+            processStatement.closeStatement(ps);
+            processConnection.closeConnection(connection);
         }
-
-        return valueObjects;
     }
 
     /**
@@ -141,24 +155,26 @@ public class DaoImpl implements Dao {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet rs = null;
+
         try {
             log.info("message=Executing sql: " + sql + " with params: " + params.toString() + " and valueObject: " + valueObjectClass.getSimpleName());
-            connection = repositoryFunc.getConnection();
+            connection = processConnection.getConnection();
             valueObject = valueObjectClass.getConstructor().newInstance();
             preparedStatement = connection.prepareStatement(sql);
             repositoryFunc.setSearchParams(preparedStatement, params);
             rs = preparedStatement.executeQuery();
+
             if (rs.next()) {
                 valueObject.parseSql(rs);
             }
+            return (T) valueObject;
         } catch (SQLException | NoSuchMethodException | InstantiationException | IllegalAccessException |
                  InvocationTargetException e) {
             throw new GetDataException(String.format(FAILED_TO_GET_DATA, sql, valueObject), e.getCause());
         } finally {
-            repositoryFunc.closeStatement(preparedStatement);
-            repositoryFunc.closeConnection(connection);
+            processStatement.closeStatement(preparedStatement);
+            processConnection.closeConnection(connection);
         }
-        return (T) valueObject;
     }
 
     /**
@@ -176,9 +192,10 @@ public class DaoImpl implements Dao {
         ResultSet rs = null;
         ResultSetMetaData meta = null;
         int count = 0;
+
         try {
             log.info("message=Executing sql: " + sql + "(get multiple rows)");
-            cn = repositoryFunc.getConnection();
+            cn = processConnection.getConnection();
             // sql = processParams(sql, params);
             st = cn.createStatement();
             rs = st.executeQuery(sql);
@@ -186,8 +203,8 @@ public class DaoImpl implements Dao {
         } catch (SQLException e) {
             throw new GetDataException(String.format(FAILED_TO_GET_MULTIPLE_ROW, sql), e.getCause());
         } finally {
-            repositoryFunc.closeStatement(st);
-            repositoryFunc.closeConnection(cn);
+            processStatement.closeStatement(st);
+            processConnection.closeConnection(cn);
         }
         return rows;
     }
@@ -207,8 +224,9 @@ public class DaoImpl implements Dao {
         ResultSet rs = null;
         ResultSetMetaData meta = null;
         int count = 0;
+
         try {
-            cn = repositoryFunc.getConnection();
+            cn = processConnection.getConnection();
             st = cn.createStatement();
             rs = st.executeQuery(sql);
             if (rs.next()) {
@@ -222,14 +240,14 @@ public class DaoImpl implements Dao {
         } catch (SQLException e) {
             throw new GetDataException(String.format(FAILED_TO_GET_SINGLE_ROW, sql), e.getCause());
         } finally {
-            repositoryFunc.closeStatement(st);
-            repositoryFunc.closeConnection(cn);
+            processStatement.closeStatement(st);
+            processConnection.closeConnection(cn);
         }
         return values;
     }
 
     /**
-     * Use to set list of value object
+     * Instead of saving a single valueObject. We will save a list of value objects. Normally we use it for insert, delete, update queries
      *
      * @param valueObjects List of valueObjectClass The class of the value object.
      * @throws SQLException
@@ -240,8 +258,9 @@ public class DaoImpl implements Dao {
         PreparedStatement ps = null;
         String sql = null;
         List<Object> params = null;
+
         try {
-            conn = repositoryFunc.getConnection();
+            conn = processConnection.getConnection();
             conn.setAutoCommit(false);
             for (ValueObject valueObject : valueObjects) {
                 sql = valueObject.getExecuteSql();
@@ -255,16 +274,17 @@ public class DaoImpl implements Dao {
         } catch (SQLException e) {
             throw new SetDataException(FAILED_TO_SAVE_VALUE_OBJECT, e.getCause());
         } finally {
-            repositoryFunc.closeStatement(ps);
-            repositoryFunc.closeConnection(conn);
+            processStatement.closeStatement(ps);
+            processConnection.closeConnection(conn);
         }
     }
 
     /**
-     * @param valueObject valueObjectClass The class of the value object.
+     * Use to set value object into Database. Normally we use it for insert, delete, update queries
+     * @param valueObject we want to process
      */
     @Override
-    public void setValueObject(ValueObject valueObject) throws SQLException {
+    public void setValueObject(ValueObject valueObject) {
         boolean isUpdated = valueObject.getResultCode() == ErrorCodeMap.RECORD_FOUND && valueObject.isModified();
         boolean isNewValueObject = valueObject.getResultCode() == ErrorCodeMap.NEW_RECORD;
         boolean isDeletedValueObject = valueObject.getResultCode() == ErrorCodeMap.DELETED_RECORD;
@@ -272,25 +292,26 @@ public class DaoImpl implements Dao {
         if (isUpdated || isNewValueObject || isDeletedValueObject) {
             Connection connection = null;
             try {
-                connection = repositoryFunc.getConnection();
+                connection = processConnection.getConnection();
                 this.executeSql(connection, valueObject.getExecuteSql(), valueObject.getParams());
             } finally {
-                repositoryFunc.closeConnection(connection);
+                processConnection.closeConnection(connection);
             }
         }
     }
 
-    public int executeSql(Connection cn, String sql, List<Object> params) {
+    private int executeSql(Connection connection, String sql, List<Object> params) {
         PreparedStatement ps = null;
         int rowsAffected = 0;
+
         try {
-            ps = cn.prepareStatement(sql);
+            ps = connection.prepareStatement(sql);
             repositoryFunc.setSearchParams(ps, params);
             rowsAffected = ps.executeUpdate();
         } catch (SQLException e) {
             throw new SetDataException(String.format(FAILED_TO_EXECUTE, sql , params), e.getCause());
         } finally {
-            repositoryFunc.closeStatement(ps);
+            processStatement.closeStatement(ps);
         }
         return rowsAffected;
     }

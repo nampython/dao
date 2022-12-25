@@ -9,8 +9,5 @@ public interface RepositoryFunc {
     public abstract void setSearchParams(PreparedStatement ps, List<Object> params);
     public abstract void setParam(PreparedStatement ps, Object obj, int j) throws SQLException;
     public abstract void processParams(String sql, List<Object> params);
-    public abstract void closeConnection(Connection connection);
-    public abstract void closeStatement(Statement stmt);
-    public abstract Connection getConnection();
     public abstract void getMultipleRows(ResultSet rs, List<List<Value>> values) throws SQLException;
 }
