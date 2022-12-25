@@ -1,13 +1,13 @@
 package com.example.Excercise1.utils;
 
 import com.example.Excercise1.exceptions.CannotSetValueException;
-import com.example.Excercise1.exceptions.SetParameterException;
+import com.example.Excercise1.valueUtils.SetValue;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,6 +16,13 @@ import static com.example.Excercise1.constants.EntityConstants.PREFIX_SET_METHOD
 
 @Component
 public class LogicEntityImpl implements LogicEntity {
+
+    private final SetValue setValue;
+    @Autowired
+    public LogicEntityImpl(SetValue setValue) {
+        this.setValue = setValue;
+    }
+
 
     /**
      * Auto set values from o1 to o2 object
@@ -65,19 +72,6 @@ public class LogicEntityImpl implements LogicEntity {
     }
 
     public Method setParameterGetMethod(Class<?> cls, Class<?> typeParameter, String nameOfMethod) throws NoSuchMethodException {
-        Method method = null;
-
-        if (String.class.equals(typeParameter)) {
-            method = cls.getMethod(nameOfMethod, String.class);
-        } else if (Integer.class.equals(typeParameter)) {
-            method = cls.getMethod(nameOfMethod, Integer.class);
-        } else if (BigDecimal.class.equals(typeParameter)) {
-            method = cls.getMethod(nameOfMethod, BigDecimal.class);
-        } else if (Short.class.equals(typeParameter)) {
-            method = cls.getMethod(nameOfMethod, Short.class);
-        } else {
-            throw new SetParameterException("Error in processing parameters for class " + cls.getSimpleName() + "with method" + nameOfMethod);
-        }
-        return method;
+        return this.setValue.setParamsGetMethod(cls, typeParameter, nameOfMethod);
     }
 }
