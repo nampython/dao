@@ -1,8 +1,11 @@
 package com.example.Excercise1.repository;
 
+import com.example.Excercise1.database.ProcessConnection;
+import com.example.Excercise1.database.ProcessStatement;
 import com.example.Excercise1.exceptions.ProcedureException;
 import com.example.Excercise1.valueObject.Value;
 import com.example.Excercise1.valueObject.ValueObject;
+import com.example.Excercise1.valueUtils.SetValue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +21,16 @@ import static com.example.Excercise1.constants.MessageException.*;
 @Repository
 public class StoredProceduresImpl implements StoredProcedures {
     private static final Logger log = LogManager.getLogger(StoredProceduresImpl.class);
+    private final ProcessConnection processConnection;
+    private final ProcessStatement processStatement;
     private final RepositoryFunc repositoryFunc;
+    private final SetValue setValue;
     @Autowired
-    public StoredProceduresImpl(RepositoryFunc repositoryFunc) {
+    public StoredProceduresImpl(ProcessConnection processConnection, ProcessStatement processStatement, RepositoryFunc repositoryFunc, SetValue setValue) {
+        this.processConnection = processConnection;
+        this.processStatement = processStatement;
         this.repositoryFunc = repositoryFunc;
+        this.setValue = setValue;
     }
 
     /**
@@ -38,7 +47,7 @@ public class StoredProceduresImpl implements StoredProcedures {
 
         try {
             log.info("message=Calling Stored Procedure= " + storedProcedureName);
-            connection = repositoryFunc.getConnection();
+            connection = processConnection.getConnection();
             callableStatement = connection.prepareCall(storedProcedureName);
             callableStatement.execute();
             rs = callableStatement.getResultSet();
@@ -47,8 +56,8 @@ public class StoredProceduresImpl implements StoredProcedures {
         } catch (SQLException e) {
             throw new ProcedureException(String.format(FAILED_TO_LOAD_VALUE_OBJECTS_BY_STORED_PRODUCER, storedProcedureName));
         } finally {
-            repositoryFunc.closeStatement(callableStatement);
-            repositoryFunc.closeConnection(connection);
+            processStatement.closeStatement(callableStatement);
+            processConnection.closeConnection(connection);
         }
     }
 
@@ -68,7 +77,7 @@ public class StoredProceduresImpl implements StoredProcedures {
 
         try {
             log.debug("message=Calling Stored Procedure= " + storedProcedureName + " ,Argument= " + params);
-            connection = repositoryFunc.getConnection();
+            connection = processConnection.getConnection();
             callableStatement = connection.prepareCall(procSql);
             repositoryFunc.setSearchParams(callableStatement, params);
             callableStatement.execute();
@@ -78,8 +87,8 @@ public class StoredProceduresImpl implements StoredProcedures {
         } catch (SQLException e) {
             throw new ProcedureException(String.format(FAILED_TO_LOAD_VALUE_OBJECTS_BY_STORED_PRODUCER_WITH_INPUT_PARAMS, storedProcedureName, params));
         } finally {
-            repositoryFunc.closeStatement(callableStatement);
-            repositoryFunc.closeConnection(connection);
+            processStatement.closeStatement(callableStatement);
+            processConnection.closeConnection(connection);
         }
     }
 
@@ -99,7 +108,7 @@ public class StoredProceduresImpl implements StoredProcedures {
         String procSql = processSql(storedProcedureName, size);
         try {
             log.info("Calling Stored Procedure: " + storedProcedureName + " InputParams: " + inputParams + " OutParams: " + outputParams);
-            connection = repositoryFunc.getConnection();
+            connection = processConnection.getConnection();
             callableStatement = connection.prepareCall(procSql);
             //Register output params
             for (Map.Entry<Integer, Integer> entry : outputParams.entrySet()) {
@@ -107,7 +116,7 @@ public class StoredProceduresImpl implements StoredProcedures {
             }
             //Set input params
             for (Map.Entry<Integer, Object> entry : inputParams.entrySet()) {
-                repositoryFunc.setParam(callableStatement, entry.getValue(), entry.getKey());
+                setValue.setParamsPreStatement(callableStatement, entry.getValue(), entry.getKey());
             }
             //Execute store procedure
             callableStatement.execute();

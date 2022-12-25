@@ -1,9 +1,9 @@
 package com.example.Excercise1.utils;
 
+import org.springframework.stereotype.Component;
 import com.example.Excercise1.exceptions.CannotSetValueException;
 import com.example.Excercise1.valueUtils.SetValue;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -16,14 +16,11 @@ import static com.example.Excercise1.constants.EntityConstants.PREFIX_SET_METHOD
 
 @Component
 public class LogicEntityImpl implements LogicEntity {
-
     private final SetValue setValue;
     @Autowired
     public LogicEntityImpl(SetValue setValue) {
         this.setValue = setValue;
     }
-
-
     /**
      * Auto set values from o1 to o2 object
      * For example:
