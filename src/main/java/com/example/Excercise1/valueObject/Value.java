@@ -1,6 +1,7 @@
 package com.example.Excercise1.valueObject;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 
@@ -38,7 +39,24 @@ public class Value implements Serializable {
         }
         return Integer.valueOf(this.value.toString());
     }
-
+    public Short toShort() throws NumberFormatException {
+        if (this.value == null) {
+            return null;
+        }
+        if (this.value instanceof Short) {
+            return (Short) this.value;
+        }
+        return Short.valueOf(this.value.toString());
+    }
+    public BigDecimal toBigDecimal() throws NumberFormatException {
+        if (this.value == null) {
+            return null;
+        }
+        if (this.value instanceof BigDecimal) {
+            return (BigDecimal) this.value;
+        }
+        return BigDecimal.valueOf(Long.parseLong(this.value.toString()));
+    }
     public float toFloatValue() throws NumberFormatException {
         if (this.value instanceof Number) {
             return ((Number) this.value).floatValue();
