@@ -108,14 +108,14 @@ public class ErrorCodeMap {
     public static final String PRODUCTLINES_IMAGE = "image";
 
     // products
-    public static final String products_table = "products";
-    public static final String products_productCode = "productCode";
-    public static final String products_productName = "productName";
-    public static final String products_productLine = "productLine";
-    public static final String products_productScale = "productScale";
-    public static final String products_productVendor = "productVendor";
-    public static final String products_productDescription = "productDescription";
-    public static final String products_quantityInStock = "quantityInStock";
-    public static final String products_buyPrice = "buyPrice";
-    public static final String products_msrp = "msrp";
+    public static final String PRODUCTS_TABLE = "products";
+    public static final String PRODUCTS_PRODUCTCODE = "productCode";
+    public static final String PRODUCTS_PRODUCTNAME = "productName";
+    public static final String PRODUCTS_PRODUCTLINE = "productLine";
+    public static final String PRODUCTS_PRODUCTSCALE = "productScale";
+    public static final String PRODUCTS_PRODUCTVENDOR = "productVendor";
+    public static final String PRODUCTS_PRODUCTDESCRIPTION = "productDescription";
+    public static final String PRODUCTS_QUANTITYINSTOCK = "quantityInStock";
+    public static final String PRODUCTS_BUYPRICE = "buyPrice";
+    public static final String PRODUCTS_MSRP = "msrp";
 }
