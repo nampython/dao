@@ -84,7 +84,7 @@ public class ErrorCodeMap {
     public static final String ORDER_DETAILS_ORDERLINENUMBER = "orderLineNumber";
 
     // orders
-    public static String ORDERS_TABLE = "orderNumber";
+    public static String ORDERS_TABLE = "orders";
     public static String ORDERS_ORDERNUMBER = "orderNumber";
     public static String ORDERS_ORDERDATE = "orderDate";
     public static String ORDERS_REQUIREDDATE = "requiredDate";
