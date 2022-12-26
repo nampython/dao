@@ -1,5 +1,8 @@
 package com.example.Excercise1.utils;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+
 public class ErrorCodeMap {
     /**
      * Generic 'success' code. (0 - 199)
@@ -32,4 +35,87 @@ public class ErrorCodeMap {
 
     public static final int DATA_LOCKED = 4;
     public static final String DATA_LOCKED_MSG = "Data locked";
+
+    // offices
+    public static final String OFFICE_TABLE = "offices";
+    public static final String OFFICE_OFFICE_CODE = "officeCode";
+    public static final String OFFICE_CITY = "city";
+    public static final String OFFICE_PHONE = "phone";
+    public static final String OFFICE_ADDRESS_LINE1 = "addressLine1";
+    public static final String OFFICE_ADDRESS_LINE2 = "addressLine2";
+    public static final String OFFICE_STATE = "state";
+    public static final String OFFICE_COUNTRY = "country";
+    public static final String OFFICE_POSTAL_CODE = "postalCode";
+    public static final String OFFICE_TERRITORY = "territory";
+
+    // customers
+    public static final String CUSTOMERS_TABLE = "customers";
+    public static final String CUSTOMERS_CUSTOMER_NUMBER = "customerNumber";
+    public static final String CUSTOMERS_CUSTOMER_NAME = "customerName";
+    public static final String CUSTOMERS_CONTACT_LAST_NAME = "contactLastName";
+    public static final String CUSTOMERS_CONTACT_FIRST_NAME = "contactFirstName";
+    public static final String CUSTOMERS_PHONE = "phone";
+    public static final String CUSTOMERS_ADDRESS_LINE1 = "addressLine1";
+    public static final String CUSTOMERS_ADDRESS_LINE2 = "addressLine2";
+    public static final String CUSTOMERS_CITY = "city";
+    public static final String CUSTOMERS_STATE = "state";
+    public static final String CUSTOMERS_POSTAL_CODE = "postalCode";
+    public static final String CUSTOMERS_COUNTRY = "country";
+    public static final String CUSTOMERS_SALES_REP_EMPLOYEE_NUMBER = "salesRepEmployeeNumber";
+    public static final String CUSTOMERS_CREDIT_LIMIT = "creditLimit";
+
+    // employees
+    public static final  String EMPLOYEES_TABLE = "employeeNumber ";
+    public static final  String EMPLOYEES_EMPLOYEENUMBER = "employeeNumber ";
+    public static final  String EMPLOYEES_LASTNAME = "lastName";
+    public static final  String EMPLOYEES_FIRSTNAME = "firstName";
+    public static final  String EMPLOYEES_EXTENSION = "extension";
+    public static final  String EMPLOYEES_EMAIL = "email";
+    public static final  String EMPLOYEES_OFFICECODE = "officeCode";
+    public static final  String EMPLOYEES_REPORTSTO = "reportsTo";
+    public static final  String EMPLOYEES_JOBTITLE = "jobTitle";
+
+    // order details
+    public static final String ORDER_DETAILS_TABLE = "orderdetails";
+    public static final String ORDER_DETAILS_ORDERNUMBER = "orderNumber";
+    public static final String ORDER_DETAILS_PRODUCTCODE = "productCode";
+    public static final String ORDER_DETAILS_QUANTITYORDERED = "quantityOrdered";
+    public static final String ORDER_DETAILS_PRICEEACH = "priceEach";
+    public static final String ORDER_DETAILS_ORDERLINENUMBER = "orderLineNumber";
+
+    // orders
+    public static String ORDERS_TABLE = "orderNumber";
+    public static String ORDERS_ORDERNUMBER = "orderNumber";
+    public static String ORDERS_ORDERDATE = "orderDate";
+    public static String ORDERS_REQUIREDDATE = "requiredDate";
+    public static String ORDERS_SHIPPEDDATE = "shippedDate";
+    public static String ORDERS_STATUS = "status";
+    public static String ORDERS_COMMENTS = "comments";
+    public static String ORDERS_CUSTOMERNUMBER = "customerNumber";
+
+    // payments
+    public static final String PAYMENTS_TABLE = "payments";
+    public static final String PAYMENTS_CUSTOMERNUMBER = "customerNumber";
+    public static final String PAYMENTS_CHECKNUMBER = "checkNumber";
+    public static final String PAYMENTS_PAYMENTDATE = "paymentDate";
+    public static final String PAYMENTS_AMOUNT = "amount";
+
+    // productlines
+    public static final String PRODUCTLINES_TABLE = "productlines";
+    public static final String PRODUCTLINES_PRODUCTLINE = "productLine";
+    public static final String PRODUCTLINES_TEXTDESCRIPTION = "textDescription";
+    public static final String PRODUCTLINES_HTMLDESCRIPTION = "htmlDescription";
+    public static final String PRODUCTLINES_IMAGE = "image";
+
+    // products
+    public static final String products_table = "products";
+    public static final String products_productCode = "productCode";
+    public static final String products_productName = "productName";
+    public static final String products_productLine = "productLine";
+    public static final String products_productScale = "productScale";
+    public static final String products_productVendor = "productVendor";
+    public static final String products_productDescription = "productDescription";
+    public static final String products_quantityInStock = "quantityInStock";
+    public static final String products_buyPrice = "buyPrice";
+    public static final String products_msrp = "msrp";
 }
