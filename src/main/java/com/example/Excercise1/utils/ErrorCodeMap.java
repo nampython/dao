@@ -65,7 +65,7 @@ public class ErrorCodeMap {
     public static final String CUSTOMERS_CREDIT_LIMIT = "creditLimit";
 
     // employees
-    public static final  String EMPLOYEES_TABLE = "employeeNumber ";
+    public static final  String EMPLOYEES_TABLE = "employees";
     public static final  String EMPLOYEES_EMPLOYEENUMBER = "employeeNumber ";
     public static final  String EMPLOYEES_LASTNAME = "lastName";
     public static final  String EMPLOYEES_FIRSTNAME = "firstName";
