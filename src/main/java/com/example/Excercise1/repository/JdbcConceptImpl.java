@@ -1,5 +1,5 @@
 package com.example.Excercise1.repository;
-import com.example.Excercise1.database.ProcessConnection;
+import com.example.Excercise1.database.ConnectionDB;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import java.sql.*;
@@ -9,11 +9,11 @@ import java.util.List;
 @Repository
 public class JdbcConceptImpl implements JdbcConcept {
 
+    private final RepositoryFunc repositoryFunc;
+    private final ConnectionDB processConnection;
     @Autowired
-    private RepositoryFunc repositoryFunc;
-    private final ProcessConnection processConnection;
-    @Autowired
-    public JdbcConceptImpl(ProcessConnection processConnection) {
+    public JdbcConceptImpl(RepositoryFunc repositoryFunc, ConnectionDB processConnection) {
+        this.repositoryFunc = repositoryFunc;
         this.processConnection = processConnection;
     }
 

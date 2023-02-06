@@ -1,7 +1,7 @@
 package com.example.Excercise1.repository;
 
-import com.example.Excercise1.database.ProcessConnection;
-import com.example.Excercise1.database.ProcessStatement;
+import com.example.Excercise1.database.ConnectionDB;
+import com.example.Excercise1.database.StatementDB;
 import com.example.Excercise1.exceptions.GetDataException;
 import com.example.Excercise1.valueObject.Value;
 import com.example.Excercise1.valueObject.ValueObject;
@@ -21,13 +21,13 @@ import static com.example.Excercise1.constants.MessageException.*;
 public class DaoImpl implements Dao {
     private static final Logger log = LogManager.getLogger(DaoImpl.class);
     private final RepositoryFunc repositoryFunc;
-    private final ProcessConnection processConnection;
-    private final ProcessStatement processStatement;
+    private final ConnectionDB connectionDB;
+    private final StatementDB statementDB;
     @Autowired
-    public DaoImpl(RepositoryFunc repositoryFunc, ProcessConnection processConnection, ProcessStatement processStatement) {
+    public DaoImpl(RepositoryFunc repositoryFunc, ConnectionDB connectionDB, StatementDB statementDB) {
         this.repositoryFunc = repositoryFunc;
-        this.processConnection = processConnection;
-        this.processStatement = processStatement;
+        this.connectionDB = connectionDB;
+        this.statementDB = statementDB;
     }
 
     /**
@@ -48,7 +48,7 @@ public class DaoImpl implements Dao {
 
         try {
             log.info("message=Executing sql: " + sql + " with " + "valueObject: " + valueObjectClass.getSimpleName());
-            connection = processConnection.getConnection();
+            connection = connectionDB.getConnection();
             stmt = connection.createStatement();
 //            stmt.setFetchSize(getFetchSize());
             rs = stmt.executeQuery(sql);
@@ -63,8 +63,8 @@ public class DaoImpl implements Dao {
                  InvocationTargetException e) {
             throw new GetDataException(String.format(FAILED_TO_GET_DATA, sql, valueObjects), e.getCause());
         } finally {
-            processStatement.closeStatement(stmt);
-            processConnection.closeConnection(connection);
+            statementDB.closeStatement(stmt);
+            connectionDB.closeConnection(connection);
         }
     }
 
@@ -77,7 +77,7 @@ public class DaoImpl implements Dao {
 
         try {
             log.info("message=Executing sql: " + sql + " with " + "valueObject: " + valueObjectClass.getSimpleName());
-            connection = processConnection.getConnection();
+            connection = connectionDB.getConnection();
             stmt = connection.createStatement();
             rs = stmt.executeQuery(sql);
 
@@ -90,8 +90,8 @@ public class DaoImpl implements Dao {
                  NoSuchMethodException e) {
             throw new GetDataException(String.format(FAILED_TO_GET_DATA, sql, valueObjectClass.getSimpleName()), e.getCause());
         } finally {
-            processStatement.closeStatement(stmt);
-            processConnection.closeConnection(connection);
+            statementDB.closeStatement(stmt);
+            connectionDB.closeConnection(connection);
         }
     }
 
@@ -111,7 +111,7 @@ public class DaoImpl implements Dao {
 
         try {
             log.info("message=Executing sql: " + sql + "(get multiple rows)");
-            cn = processConnection.getConnection();
+            cn = connectionDB.getConnection();
             // sql = processParams(sql, params);
             st = cn.createStatement();
             rs = st.executeQuery(sql);
@@ -119,8 +119,8 @@ public class DaoImpl implements Dao {
         } catch (SQLException e) {
             throw new GetDataException(String.format(FAILED_TO_GET_MULTIPLE_ROW, sql), e.getCause());
         } finally {
-            processStatement.closeStatement(st);
-            processConnection.closeConnection(cn);
+            statementDB.closeStatement(st);
+            connectionDB.closeConnection(cn);
         }
         return rows;
     }
@@ -142,7 +142,7 @@ public class DaoImpl implements Dao {
         int count = 0;
 
         try {
-            cn = processConnection.getConnection();
+            cn = connectionDB.getConnection();
             st = cn.createStatement();
             rs = st.executeQuery(sql);
             if (rs.next()) {
@@ -156,8 +156,8 @@ public class DaoImpl implements Dao {
         } catch (SQLException e) {
             throw new GetDataException(String.format(FAILED_TO_GET_SINGLE_ROW, sql), e.getCause());
         } finally {
-            processStatement.closeStatement(st);
-            processConnection.closeConnection(cn);
+            statementDB.closeStatement(st);
+            connectionDB.closeConnection(cn);
         }
         return values;
     }

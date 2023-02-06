@@ -9,7 +9,7 @@ import java.sql.Statement;
 import static com.example.Excercise1.constants.MessageException.FAILED_TO_CLOSE_STATEMENT;
 
 @Component
-public class ProcessStatementImpl implements ProcessStatement{
+public class StatementDBImpl implements StatementDB {
     @Override
     public void closeStatement(Statement statement) {
         try {

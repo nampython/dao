@@ -1,7 +1,7 @@
 package com.example.Excercise1.repository;
 
-import com.example.Excercise1.database.ProcessConnection;
-import com.example.Excercise1.database.ProcessStatement;
+import com.example.Excercise1.database.ConnectionDB;
+import com.example.Excercise1.database.StatementDB;
 import com.example.Excercise1.exceptions.ProcedureException;
 import com.example.Excercise1.valueObject.Value;
 import com.example.Excercise1.valueObject.ValueObject;
@@ -21,14 +21,14 @@ import static com.example.Excercise1.constants.MessageException.*;
 @Repository
 public class StoredProceduresImpl implements StoredProcedures {
     private static final Logger log = LogManager.getLogger(StoredProceduresImpl.class);
-    private final ProcessConnection processConnection;
-    private final ProcessStatement processStatement;
+    private final ConnectionDB processConnection;
+    private final StatementDB statementDB;
     private final RepositoryFunc repositoryFunc;
     private final SetValue setValue;
     @Autowired
-    public StoredProceduresImpl(ProcessConnection processConnection, ProcessStatement processStatement, RepositoryFunc repositoryFunc, SetValue setValue) {
+    public StoredProceduresImpl(ConnectionDB processConnection, StatementDB statementDB, RepositoryFunc repositoryFunc, SetValue setValue) {
         this.processConnection = processConnection;
-        this.processStatement = processStatement;
+        this.statementDB = statementDB;
         this.repositoryFunc = repositoryFunc;
         this.setValue = setValue;
     }
@@ -56,7 +56,7 @@ public class StoredProceduresImpl implements StoredProcedures {
         } catch (SQLException e) {
             throw new ProcedureException(String.format(FAILED_TO_LOAD_VALUE_OBJECTS_BY_STORED_PRODUCER, storedProcedureName));
         } finally {
-            processStatement.closeStatement(callableStatement);
+            statementDB.closeStatement(callableStatement);
             processConnection.closeConnection(connection);
         }
     }
@@ -87,7 +87,7 @@ public class StoredProceduresImpl implements StoredProcedures {
         } catch (SQLException e) {
             throw new ProcedureException(String.format(FAILED_TO_LOAD_VALUE_OBJECTS_BY_STORED_PRODUCER_WITH_INPUT_PARAMS, storedProcedureName, params));
         } finally {
-            processStatement.closeStatement(callableStatement);
+            statementDB.closeStatement(callableStatement);
             processConnection.closeConnection(connection);
         }
     }

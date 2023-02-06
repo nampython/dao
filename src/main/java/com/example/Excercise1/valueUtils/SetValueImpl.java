@@ -11,7 +11,6 @@ import java.sql.SQLException;
 
 @Component
 public class SetValueImpl implements SetValue {
-
     @Override
     public void setParamsPreStatement(PreparedStatement statement, Object obj, Integer index) throws SQLException {
 

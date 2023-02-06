@@ -1,7 +1,7 @@
 package com.example.Excercise1.repository;
 
-import com.example.Excercise1.database.ProcessConnection;
-import com.example.Excercise1.database.ProcessStatement;
+import com.example.Excercise1.database.ConnectionDB;
+import com.example.Excercise1.database.StatementDB;
 import com.example.Excercise1.exceptions.GetDataException;
 import com.example.Excercise1.exceptions.SetDataException;
 import com.example.Excercise1.utils.ErrorCodeMap;
@@ -26,15 +26,15 @@ import static com.example.Excercise1.constants.MessageException.*;
 @Repository
 public class PreparedStatementDaoImpl implements PreparedStatementDao {
     private static final Logger log = LogManager.getLogger(PreparedStatementDaoImpl.class);
-    private final ProcessConnection processConnection;
-    private final ProcessStatement processStatement;
+    private final ConnectionDB processConnection;
+    private final StatementDB statementDB;
     private final RepositoryFunc repositoryFunc;
 
     @Autowired
-    public PreparedStatementDaoImpl(ProcessConnection processConnection, RepositoryFunc repositoryFunc, SetValue setValue, ProcessStatement processStatement) {
+    public PreparedStatementDaoImpl(ConnectionDB processConnection, RepositoryFunc repositoryFunc, SetValue setValue, StatementDB statementDB) {
         this.processConnection = processConnection;
         this.repositoryFunc = repositoryFunc;
-        this.processStatement = processStatement;
+        this.statementDB = statementDB;
     }
 
     /**
@@ -96,7 +96,7 @@ public class PreparedStatementDaoImpl implements PreparedStatementDao {
                  InvocationTargetException e) {
             throw new GetDataException(String.format(FAILED_TO_GET_DATA, sql, valueObjects), e.getCause());
         } finally {
-            processStatement.closeStatement(ps);
+            statementDB.closeStatement(ps);
             processConnection.closeConnection(connection);
         }
     }
@@ -134,7 +134,7 @@ public class PreparedStatementDaoImpl implements PreparedStatementDao {
                  InvocationTargetException e) {
             throw new GetDataException(String.format(FAILED_TO_GET_DATA, sql, valueObject), e.getCause());
         } finally {
-            processStatement.closeStatement(preparedStatement);
+            statementDB.closeStatement(preparedStatement);
             processConnection.closeConnection(connection);
         }
     }
@@ -172,7 +172,7 @@ public class PreparedStatementDaoImpl implements PreparedStatementDao {
         } catch (SQLException e) {
             throw new SetDataException(String.format(FAILED_TO_EXECUTE, sql , params), e.getCause());
         } finally {
-            processStatement.closeStatement(ps);
+            statementDB.closeStatement(ps);
         }
         return rowsAffected;
     }
@@ -204,7 +204,7 @@ public class PreparedStatementDaoImpl implements PreparedStatementDao {
         } catch (SQLException e) {
             throw new SetDataException(FAILED_TO_SAVE_VALUE_OBJECT, e.getCause());
         } finally {
-            processStatement.closeStatement(ps);
+            statementDB.closeStatement(ps);
             processConnection.closeConnection(conn);
         }
     }
